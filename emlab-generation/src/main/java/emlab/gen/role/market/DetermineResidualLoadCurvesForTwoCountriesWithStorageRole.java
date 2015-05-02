@@ -1,6 +1,11 @@
 package emlab.gen.role.market;
 
 import hep.aida.bin.DynamicBin1D;
+import ilog.concert.IloException;
+import ilog.concert.IloLQNumExpr;
+import ilog.concert.IloLinearNumExpr;
+import ilog.concert.IloNumVar;
+import ilog.cplex.IloCplex;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +77,8 @@ Role<DecarbonizationModel> {
         List<Zone> zoneList = Utils.asList(reps.template.findAll(Zone.class));
         List<PowerGeneratingTechnology> technologyList = Utils.asList(reps.powerGeneratingTechnologyRepository
                 .findAllIntermittentPowerGeneratingTechnologies());
+        List<PowerGeneratingTechnology> storageTechnologyList = Utils.asList(reps.powerGeneratingTechnologyRepository
+                .findAllStoragePowerGeneratingTechnologies());
         Map<Zone, List<PowerGridNode>> zoneToNodeList = new HashMap<Zone, List<PowerGridNode>>();
         for (Zone zone : zoneList) {
             List<PowerGridNode> nodeList = Utils.asList(reps.powerGridNodeRepository.findAllPowerGridNodesByZone(zone));
@@ -194,9 +201,7 @@ Role<DecarbonizationModel> {
         // intermittent production from the
         // the residual load column (one column per zone). Calculate the total
         // residual load (assuming
-        // no interconnector constraints). Reduce the load factors by obvious
-        // spill, that is RES production greater than demand + interconnector
-        // capacity.
+        // no interconnector constraints).
 
         for (Zone zone : zoneList) {
 
@@ -233,6 +238,225 @@ Role<DecarbonizationModel> {
             }
 
             m.viewColumn(RLOADTOTAL).assign(m.viewColumn(RLOADINZONE.get(zone)), Functions.plus);
+            // 4. Optimize residual load curve for storage and assign new values
+            // residual load to matrix
+
+            // Initiate values for optimization
+
+            int HOURS = hourlyDataDoubleA.length; // amount of hours in
+                                                  // simulation
+            int ZONES = zone.length;
+            double[] loadA = hourlyDataDoubleA; // load per Hour zone A
+            double[] loadB = hourlyDataDoubleB; // load per Hour zone B
+
+            double initialStorage = 0;
+
+            // Start optimization model
+
+            try {
+                // define new model
+                IloCplex cplex = new IloCplex();
+
+                // define variables
+
+                IloNumVar[][] P = new IloNumVar[ZONES][HOURS]; // load in zone j
+                                                               // at time i
+                for (int j = 0; j < ZONES; j++) {
+                    P[j] = cplex.numVarArray(HOURS, zone[j], zone[j]);
+                    if (j == 0) {
+                        for (int i = 0; i < HOURS; i++) {
+                            P[j][i] = cplex.numVar(loadA[i], loadA[i]);
+                        }
+                    }
+                    if (j == 1) {
+                        for (int i = 0; i < HOURS; i++) {
+                            P[j][i] = cplex.numVar(loadB[i], loadB[i]);
+                        }
+                    }
+                }
+
+                IloNumVar[][] E = new IloNumVar[ZONES][HOURS]; // Energy storage
+                                                               // content in
+                                                               // Zone j at time
+                                                               // i
+                for (int j = 0; j < ZONES; j++) {
+                    E[j] = cplex.numVarArray(HOURS, zone[j], zone[j]);
+                    for (int i = 0; i < HOURS; i++) {
+                        E[j][i] = cplex.numVar(storageTechnologyList.get(j).getMinStorageCapacity(),
+                                storageTechnologyList.get(j).getMaxStorageCapacity());
+                    }
+                }
+
+                IloNumVar[][] mIn = new IloNumVar[ZONES][HOURS]; // Power
+                                                                 // outflow of
+                                                                 // market j at
+                                                                 // time i
+                for (int j = 0; j < ZONES; j++) {
+                    mIn[j] = cplex.numVarArray(HOURS, zone[j], zone[j]);
+                    for (int i = 0; i < HOURS; i++) {
+                        mIn[j][i] = cplex.numVar(0, Double.MAX_VALUE);
+                    }
+                }
+
+                IloNumVar[][] mOut = new IloNumVar[ZONES][HOURS]; // Power
+                                                                  // inflow of
+                                                                  // market j at
+                                                                  // time i
+                for (int j = 0; j < ZONES; j++) {
+                    mOut[j] = cplex.numVarArray(HOURS, zone[j], zone[j]);
+                    for (int i = 0; i < HOURS; i++) {
+                        mOut[j][i] = cplex.numVar(0, Double.MAX_VALUE);
+                    }
+                }
+
+                IloNumVar[][] sIn = new IloNumVar[ZONES][HOURS]; // Storage
+                                                                 // inflow in
+                                                                 // storage j at
+                                                                 // time i
+                for (int j = 0; j < ZONES; j++) {
+                    sIn[j] = cplex.numVarArray(HOURS, zone[j], zone[j]);
+                    for (int i = 0; i < HOURS; i++) {
+                        sIn[j][i] = cplex.numVar(0, storageTechnologyList.get(j).getChargingRate());
+                    }
+                }
+
+                IloNumVar[][] sOut = new IloNumVar[ZONES][HOURS]; // Storage
+                                                                  // outflow of
+                                                                  // storage j
+                                                                  // at time i
+                for (int j = 0; j < ZONES; j++) {
+                    sOut[j] = cplex.numVarArray(HOURS, zone[j], zone[j]);
+                    for (int i = 0; i < HOURS; i++) {
+                        sOut[j][i] = cplex.numVar(0, storageTechnologyList.get(j).getDisChargingRate());
+                    }
+                }
+
+                IloNumVar[] I = new IloNumVar[HOURS]; // Power flow from zone A
+                                                      // to B
+                for (int i = 0; i < HOURS; i++) {
+                    I[i] = cplex.numVar(-m.get(INTERCONNECTOR, i), m.get(INTERCONNECTOR, i));
+                }
+
+                // define expressions
+
+                IloLinearNumExpr[][] storageContent = new IloLinearNumExpr[ZONES][HOURS];
+                for (int j = 0; j < ZONES; j++) {
+                    for (int i = 1; i < HOURS; i++) {
+                        storageContent[j][i] = cplex.linearNumExpr();
+                        storageContent[j][i].addTerm(1.0, E[j][i - 1]);
+                        storageContent[j][i].addTerm(storageTechnologyList.get(j).getChargeEfficiency(), sIn[j][i - 1]);
+                        storageContent[j][i].addTerm(-1 / storageTechnologyList.get(j).getChargeEfficiency(),
+                                sOut[j][i - 1]);
+                    }
+                }
+
+                IloLinearNumExpr[][] marketOutflow = new IloLinearNumExpr[ZONES][HOURS];
+                for (int j = 0; j < ZONES; j++) {
+                    for (int i = 0; i < HOURS; i++) {
+                        if (j == 0) {
+                            marketOutflow[j][i] = cplex.linearNumExpr();
+                            marketOutflow[j][i].addTerm(1, sIn[j][i]);
+                            marketOutflow[j][i].addTerm(1, I[i]);
+                        }
+                        if (j == 1) {
+                            marketOutflow[j][i] = cplex.linearNumExpr();
+                            marketOutflow[j][i].addTerm(1, sIn[j][i]);
+                            marketOutflow[j][i].addTerm(-1, I[i]);
+                        }
+                    }
+                }
+
+                IloLinearNumExpr[][] marketInflow = new IloLinearNumExpr[ZONES][HOURS];
+                for (int j = 0; j < ZONES; j++) {
+                    for (int i = 0; i < HOURS; i++) {
+                        if (j == 0) {
+                            marketInflow[j][i] = cplex.linearNumExpr();
+                            marketInflow[j][i].addTerm(1, sOut[j][i]);
+                            marketInflow[j][i].addTerm(-1, I[i]);
+                        }
+                        if (j == 1) {
+                            marketInflow[j][i] = cplex.linearNumExpr();
+                            marketInflow[j][i].addTerm(1, sOut[j][i]);
+                            marketInflow[j][i].addTerm(1, I[i]);
+                        }
+                    }
+                }
+
+                IloLQNumExpr objective = cplex.lqNumExpr();
+                for (int j = 0; j < ZONES; j++) {
+                    for (int i = 0; i < HOURS; i++) {
+                        objective.addTerm(1, P[j][i], P[j][i]);
+                        objective.addTerm(1, mIn[j][i], mIn[j][i]);
+                        objective.addTerm(1, mOut[j][i], mOut[j][i]);
+                        objective.addTerm(2, P[j][i], mIn[j][i]);
+                        objective.addTerm(-2, P[j][i], mOut[j][i]);
+                        objective.addTerm(-2, mIn[j][i], mOut[j][i]);
+                    }
+                }
+
+                // define objective function
+                cplex.addMinimize(objective);
+
+                // define constraints
+
+                for (int j = 0; j < ZONES; j++) {
+                    cplex.addEq(E[j][0], initialStorage);
+                }
+
+                for (int j = 0; j < ZONES; j++) {
+                    cplex.addLe(sOut[j][0], E[j][0]);
+                }
+
+                for (int j = 0; j < ZONES; j++) {
+                    for (int i = 1; i < HOURS; i++) {
+                        cplex.addEq(storageContent[j][i], E[j][i]);
+                    }
+                }
+
+                for (int j = 0; j < ZONES; j++) {
+                    for (int i = 1; i < HOURS; i++) {
+                        cplex.addEq(storageContent[j][i], E[j][i]);
+                    }
+                }
+
+                for (int j = 0; j < ZONES; j++) {
+                    for (int i = 0; i < HOURS; i++) {
+                        cplex.or(cplex.addEq(mOut[j][i], marketOutflow[j][i]),
+                                cplex.addEq(mIn[j][i], marketInflow[j][i]));
+                    }
+                }
+
+                // solve model
+                if (cplex.solve()) {
+                    System.out.println("Objective function is: " + cplex.getObjValue());
+                    for (int j = 0; j < ZONES; j++) {
+                        for (int i = 0; i < HOURS; i++) {
+                            System.out.println("Hour is: " + (i + 1));
+                            System.out.println("Storage in : " + j + cplex.getValue(sIn[j][i]));
+                            System.out.println("Storage out : " + j + cplex.getValue(sOut[j][i]));
+                            System.out.println("Storage : " + j + cplex.getValue(E[j][i]));
+                            System.out.println("I: " + cplex.getValue(I[i]));
+                            System.out.println("Market in : " + j + cplex.getValue(mIn[j][i]));
+                            System.out.println("Market out : " + j + cplex.getValue(mOut[j][i]));
+
+                        }
+                    }
+                } else {
+                    System.out.println("Model did not solve");
+                }
+
+                // close cplex
+                cplex.end();
+
+            } catch (IloException exc) {
+                exc.printStackTrace();
+            }
+
+            // 5. Reduce the load factors by obvious
+            // spill, that is RES production & storage greater than demand +
+            // interconnector
+            // capacity.
+
             // Assign minimum of -interConnectorCapacity to national
             // residual load
             m.viewColumn(RLOADINZONE.get(zone)).assign(m.viewColumn(INTERCONNECTOR), Functions.max);

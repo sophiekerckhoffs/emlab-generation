@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2012 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,14 +33,14 @@ public class PowerGeneratingTechnology {
     @SimulationParameter(label = "Capacity (MW)", from = 0, to = 2000)
     private double capacity;
 
-	@RelatedTo(type = "PGT_INVESTMENTCOSTS", elementClass = TimeSeriesImpl.class, direction = Direction.OUTGOING)
-	private TimeSeriesImpl investmentCostTimeSeries;
+    @RelatedTo(type = "PGT_INVESTMENTCOSTS", elementClass = TimeSeriesImpl.class, direction = Direction.OUTGOING)
+    private TimeSeriesImpl investmentCostTimeSeries;
 
-	@RelatedTo(type = "PGT_OMCOSTS", elementClass = TimeSeriesImpl.class, direction = Direction.OUTGOING)
-	private TimeSeriesImpl fixedOperatingCostTimeSeries;
+    @RelatedTo(type = "PGT_OMCOSTS", elementClass = TimeSeriesImpl.class, direction = Direction.OUTGOING)
+    private TimeSeriesImpl fixedOperatingCostTimeSeries;
 
-	@RelatedTo(type = "PGT_EFFICIENCYTS", elementClass = TimeSeriesImpl.class, direction = Direction.OUTGOING)
-	private TimeSeriesImpl efficiencyTimeSeries;
+    @RelatedTo(type = "PGT_EFFICIENCYTS", elementClass = TimeSeriesImpl.class, direction = Direction.OUTGOING)
+    private TimeSeriesImpl efficiencyTimeSeries;
 
     @SimulationParameter(label = "CO2 capture efficiency", from = 0, to = 1)
     private double co2CaptureEffciency;
@@ -76,6 +76,18 @@ public class PowerGeneratingTechnology {
     private boolean applicableForLongTermContract;
 
     private boolean intermittent;
+
+    private boolean storage;
+
+    private double chargeEfficiency;
+
+    private double chargingRate;
+
+    private double disChargingRate;
+
+    private double maxStorageCapacity;
+
+    private double minStorageCapacity;
 
     public double getBaseSegmentDependentAvailability() {
         return baseSegmentDependentAvailability;
@@ -161,35 +173,35 @@ public class PowerGeneratingTechnology {
         this.capacity = capacity;
     }
 
-	public double getEfficiency(long time) {
-		return efficiencyTimeSeries.getValue(time);
+    public double getEfficiency(long time) {
+        return efficiencyTimeSeries.getValue(time);
     }
 
-	public TimeSeriesImpl getInvestmentCostTimeSeries() {
-		return investmentCostTimeSeries;
-	}
+    public TimeSeriesImpl getInvestmentCostTimeSeries() {
+        return investmentCostTimeSeries;
+    }
 
-	public void setInvestmentCostTimeSeries(TimeSeriesImpl investmentCostTrend) {
-		this.investmentCostTimeSeries = investmentCostTrend;
-	}
+    public void setInvestmentCostTimeSeries(TimeSeriesImpl investmentCostTrend) {
+        this.investmentCostTimeSeries = investmentCostTrend;
+    }
 
-	public TimeSeriesImpl getFixedOperatingCostTimeSeries() {
-		return fixedOperatingCostTimeSeries;
-	}
+    public TimeSeriesImpl getFixedOperatingCostTimeSeries() {
+        return fixedOperatingCostTimeSeries;
+    }
 
-	public void setFixedOperatingCostTimeSeries(TimeSeriesImpl fixedOperatingCostTrend) {
-		this.fixedOperatingCostTimeSeries = fixedOperatingCostTrend;
-	}
+    public void setFixedOperatingCostTimeSeries(TimeSeriesImpl fixedOperatingCostTrend) {
+        this.fixedOperatingCostTimeSeries = fixedOperatingCostTrend;
+    }
 
-	public TimeSeriesImpl getEfficiencyTimeSeries() {
-		return efficiencyTimeSeries;
-	}
+    public TimeSeriesImpl getEfficiencyTimeSeries() {
+        return efficiencyTimeSeries;
+    }
 
-	public void setEfficiencyTimeSeries(TimeSeriesImpl efficiencyTrend) {
-		this.efficiencyTimeSeries = efficiencyTrend;
-	}
+    public void setEfficiencyTimeSeries(TimeSeriesImpl efficiencyTrend) {
+        this.efficiencyTimeSeries = efficiencyTrend;
+    }
 
-	public double getCo2CaptureEffciency() {
+    public double getCo2CaptureEffciency() {
         return co2CaptureEffciency;
     }
 
@@ -245,6 +257,7 @@ public class PowerGeneratingTechnology {
         this.fuels = fuels;
     }
 
+    @Override
     public String toString() {
         return this.getName();
     }
@@ -257,20 +270,68 @@ public class PowerGeneratingTechnology {
         this.applicableForLongTermContract = applicableForLongTermContract;
     }
 
-	public double getInvestmentCost(long time) {
-		return investmentCostTimeSeries.getValue(time);
+    public double getInvestmentCost(long time) {
+        return investmentCostTimeSeries.getValue(time);
     }
 
-	public double getFixedOperatingCost(long time) {
-		return fixedOperatingCostTimeSeries.getValue(time);
-	}
+    public double getFixedOperatingCost(long time) {
+        return fixedOperatingCostTimeSeries.getValue(time);
+    }
 
-	public boolean isIntermittent() {
+    public boolean isIntermittent() {
         return intermittent;
     }
 
     public void setIntermittent(boolean intermittent) {
         this.intermittent = intermittent;
+    }
+
+    public boolean isStorage() {
+        return storage;
+    }
+
+    public void setStorage(boolean storage) {
+        this.storage = storage;
+    }
+
+    public double getChargeEfficiency() {
+        return chargeEfficiency;
+    }
+
+    public void setChargeEfficiency(double chargeEfficiency) {
+        this.chargeEfficiency = chargeEfficiency;
+    }
+
+    public double getChargingRate() {
+        return chargingRate;
+    }
+
+    public void setChargingRate(double chargingRate) {
+        this.chargingRate = chargingRate;
+    }
+
+    public double getDisChargingRate() {
+        return disChargingRate;
+    }
+
+    public void setDisChargingRate(double disChargingRate) {
+        this.disChargingRate = disChargingRate;
+    }
+
+    public double getMaxStorageCapacity() {
+        return maxStorageCapacity;
+    }
+
+    public void setMaxStorageCapacity(double maxStorageCapacity) {
+        this.maxStorageCapacity = maxStorageCapacity;
+    }
+
+    public double getMinStorageCapacity() {
+        return minStorageCapacity;
+    }
+
+    public void setMinStorageCapacity(double minStorageCapacity) {
+        this.minStorageCapacity = minStorageCapacity;
     }
 
 }
