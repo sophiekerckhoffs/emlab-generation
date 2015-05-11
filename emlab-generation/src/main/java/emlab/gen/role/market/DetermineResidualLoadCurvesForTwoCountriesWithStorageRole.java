@@ -7,7 +7,6 @@ import ilog.concert.IloLinearNumExpr;
 import ilog.concert.IloNumVar;
 import ilog.cplex.IloCplex;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -247,15 +246,15 @@ Role<DecarbonizationModel> {
             Zone zoneA = zoneList.get(0);
             Zone zoneB = zoneList.get(1);
 
-            List<Double> loadZoneA = new ArrayList<Double>();
-            List<Double> loadZoneB = new ArrayList<Double>();
+            double[] loadZoneA = new double[m.rows()];
+            double[] loadZoneB = new double[m.rows()];
 
             for (int row = 0; row < m.rows(); row++) {
-                loadZoneA.add(m.get(row, RLOADINZONE.get(zoneA)));
-                loadZoneB.add(m.get(row, RLOADINZONE.get(zoneB)));
+                loadZoneA[row] = m.get(row, RLOADINZONE.get(zoneA));
+                loadZoneB[row] = m.get(row, RLOADINZONE.get(zoneB));
             }
 
-            int HOURS = loadZoneA.size(); // amount of hours in simulation
+            int HOURS = loadZoneA.length; // amount of hours in simulation
 
             double initialStorage = 0;
 
@@ -268,26 +267,26 @@ Role<DecarbonizationModel> {
                 // define variables
 
                 IloNumVar[][] P = new IloNumVar[zoneList.size()][HOURS]; // load
-                                                                         // in
-                                                                         // zone
-                                                                         // j
+                // in
+                // zone
+                // j
                 // at time i
                 for (int j = 0; j < zoneList.size(); j++) {
                     P[j] = cplex.numVarArray(HOURS, j, j);
                     if (j == 0) {
                         for (int i = 0; i < HOURS; i++) {
-                            P[j][i] = cplex.numVar(loadZoneA.get(i), loadZoneA.get(i));
+                            P[j][i] = cplex.numVar(loadZoneA[i], loadZoneA[i]);
                         }
                     }
                     if (j == 1) {
                         for (int i = 0; i < HOURS; i++) {
-                            P[j][i] = cplex.numVar(loadZoneB.get(i), loadZoneB.get(i));
+                            P[j][i] = cplex.numVar(loadZoneB[i], loadZoneB[i]);
                         }
                     }
                 }
 
                 IloNumVar[][] E = new IloNumVar[zoneList.size()][HOURS]; // Energy
-                                                                         // storage
+                // storage
                 // content in
                 // Zone j at time
                 // i
@@ -440,6 +439,21 @@ Role<DecarbonizationModel> {
 
                 // solve model
                 if (cplex.solve()) {
+
+                    DoubleMatrix1D matrixLoadZoneA = new DenseDoubleMatrix1D(loadZoneA);
+                    DoubleMatrix1D matrixLoadZoneB = new DenseDoubleMatrix1D(loadZoneB);
+
+                    for (int j = 0; j < zoneList.size(); j++) {
+                        if (j == 0) {
+                            m.viewColumn(RLOADINZONEWITHSTORAGE.get(zoneList.get(j))).assign(matrixLoadZoneA,
+                                    Functions.plus);
+                        }
+                        if (j == 1) {
+                            m.viewColumn(RLOADINZONEWITHSTORAGE.get(zoneList.get(j))).assign(matrixLoadZoneB,
+                                    Functions.plus);
+                        }
+                    }
+
                     System.out.println("Objective function is: " + cplex.getObjValue());
                     for (int j = 0; j < zoneList.size(); j++) {
                         for (int i = 0; i < HOURS; i++) {
