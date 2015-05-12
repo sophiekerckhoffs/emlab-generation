@@ -173,7 +173,7 @@ Role<DecarbonizationModel> {
         // applied.
         m.viewColumn(INTERCONNECTOR).assign(-interConnectorCapacity);
 
-        logger.debug("First 10 values of matrix: \n " + m.viewPart(0, 0, 10, m.columns()).toString());
+        logger.warn("First 10 values of matrix: \n " + m.viewPart(0, 0, 10, m.columns()).toString());
 
         // 2. Build national load curves, by adding up grid node load curves in
         // each zone.
@@ -213,9 +213,8 @@ Role<DecarbonizationModel> {
                             .calculateCapacityOfOperationalIntermittentPowerPlantsByPowerGridNodeAndTechnology(node, technology,
                                     getCurrentTick());
 
-                    // logger.warn(technology.getName() + ": " +
-                    // intermittentCapacityOfTechnologyInNode + " MW in Node "
-                    // + node.getName() + " and Zone: " + zone.getName());
+                    logger.warn(technology.getName() + ": " + intermittentCapacityOfTechnologyInNode + " MW in Node "
+                            + node.getName() + " and Zone: " + zone.getName());
 
                     IntermittentResourceProfile intermittentResourceProfile = reps.intermittentResourceProfileRepository
                             .findIntermittentResourceProfileByTechnologyAndNode(technology, node);
@@ -454,7 +453,9 @@ Role<DecarbonizationModel> {
                         }
                     }
 
-                    System.out.println("Objective function is: " + cplex.getObjValue());
+                    logger.warn("First 10 values of matrix: \n" + m.viewPart(0, 0, 10, m.columns()).toString());
+
+                    logger.warn("Objective function is: " + cplex.getObjValue());
                     for (int j = 0; j < zoneList.size(); j++) {
                         for (int i = 0; i < HOURS; i++) {
                             System.out.println("Hour is: " + (i + 1));
@@ -468,7 +469,7 @@ Role<DecarbonizationModel> {
                         }
                     }
                 } else {
-                    System.out.println("Model did not solve");
+                    logger.warn("Model did not solve");
                 }
 
                 // close cplex
