@@ -307,19 +307,19 @@ public class DetermineResidualLoadCurveWithStorageTest {
         windTech.setName("WindTech");
         windTech.setIntermittent(true);
 
-        PowerGeneratingTechnology storage = new PowerGeneratingTechnology();
-        storage.setName("Storage");
-        storage.setChargeEfficiency(0.90);
-        storage.setChargingRate(2);
-        storage.setDisChargingRate(2);
-        storage.setMaxStorageCapacity(10);
-        storage.setMinStorageCapacity(0);
-        storage.setStorage(true);
+        PowerGeneratingTechnology storageTech = new PowerGeneratingTechnology();
+        storageTech.setName("Storage");
+        storageTech.setChargeEfficiency(0.90);
+        storageTech.setChargingRate(2);
+        storageTech.setDisChargingRate(2);
+        storageTech.setMaxStorageCapacity(10);
+        storageTech.setMinStorageCapacity(0);
+        storageTech.setStorage(true);
 
         coalTech.persist();
         gasTech.persist();
         windTech.persist();
-        storage.persist();
+        storageTech.persist();
 
         IntermittentResourceProfile windIntermittentResourceProfile1 = new IntermittentResourceProfile();
         windIntermittentResourceProfile1.setIntermittentTechnology(windTech);
@@ -336,11 +336,11 @@ public class DetermineResidualLoadCurveWithStorageTest {
 
         StorageLocation storageLocation1 = new StorageLocation();
         storageLocation1.setStorageNode(node1);
-        storageLocation1.setStorageTechnology(storage);
+        storageLocation1.setStorageTechnology(storageTech);
 
         StorageLocation storageLocation2 = new StorageLocation();
         storageLocation2.setStorageNode(node2);
-        storageLocation2.setStorageTechnology(storage);
+        storageLocation2.setStorageTechnology(storageTech);
 
         storageLocation1.persist();
         storageLocation2.persist();
