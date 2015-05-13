@@ -209,18 +209,6 @@ Role<DecarbonizationModel> {
         // residual load (assuming
         // no interconnector constraints).
 
-        for (Zone zone : zoneList) {
-            for (PowerGridNode node : zoneToNodeList.get(zone)) {
-                for (PowerGeneratingTechnology technology : technologyList) {
-
-                    List<StorageLocation> storageLocationsList = new ArrayList<StorageLocation>();
-                    storageLocationsList.add(reps.storageLocationRepository.findStorageLocationByTechnologyAndNode(
-                            technology, node));
-
-                    logger.warn(storageLocationsList.toString());
-                }
-            }
-        }
 
         for (Zone zone : zoneList) {
 
@@ -277,6 +265,18 @@ Role<DecarbonizationModel> {
 
         double initialStorage = 0;
 
+        List<StorageLocation> storageLocationsList = new ArrayList<StorageLocation>();
+
+        for (Zone zone : zoneList) {
+            for (PowerGridNode node : zoneToNodeList.get(zone)) {
+
+                storageLocationsList.add(reps.storageLocationRepository.findStorageLocationByNode(node));
+
+            }
+        }
+
+        logger.warn(storageLocationsList.toString());
+
 
         // Start optimization model
 
@@ -311,8 +311,9 @@ Role<DecarbonizationModel> {
             for (int zones = 0; zones < zoneList.size(); zones++) {
                 E[zones] = cplex.numVarArray(HOURS, zones, zones);
                 for (int i = 0; i < HOURS; i++) {
-                    E[zones][i] = cplex.numVar(storageTechnologyList.get(zones).getMinStorageCapacity(),
-                            storageTechnologyList.get(zones).getMaxStorageCapacity());
+                    E[zones][i] = cplex.numVar(storageLocationsList.get(zones).getStorageTechnology()
+                            .getMinStorageCapacity(), storageLocationsList.get(zones).getStorageTechnology()
+                            .getMaxStorageCapacity());
                 }
             }
 
@@ -345,7 +346,8 @@ Role<DecarbonizationModel> {
             for (int zones = 0; zones < zoneList.size(); zones++) {
                 sIn[zones] = cplex.numVarArray(HOURS, zones, zones);
                 for (int i = 0; i < HOURS; i++) {
-                    sIn[zones][i] = cplex.numVar(0, storageTechnologyList.get(zones).getChargingRate());
+                    sIn[zones][i] = cplex.numVar(0, storageLocationsList.get(zones).getStorageTechnology()
+                            .getChargingRate());
                 }
             }
 
@@ -356,14 +358,15 @@ Role<DecarbonizationModel> {
             for (int zones = 0; zones < zoneList.size(); zones++) {
                 sOut[zones] = cplex.numVarArray(HOURS, zones, zones);
                 for (int i = 0; i < HOURS; i++) {
-                    sOut[zones][i] = cplex.numVar(0, storageTechnologyList.get(zones).getDisChargingRate());
+                    sOut[zones][i] = cplex.numVar(0, storageLocationsList.get(zones).getStorageTechnology()
+                            .getDisChargingRate());
                 }
             }
 
             IloNumVar[] I = new IloNumVar[HOURS]; // Power flow from zone A
             // to B
             for (int i = 0; i < HOURS; i++) {
-                I[i] = cplex.numVar(-m.get(INTERCONNECTOR, i), m.get(INTERCONNECTOR, i));
+                I[i] = cplex.numVar(-m.get(i, INTERCONNECTOR), m.get(i, INTERCONNECTOR));
             }
 
             // define expressions
@@ -373,8 +376,10 @@ Role<DecarbonizationModel> {
                 for (int i = 1; i < HOURS; i++) {
                     storageContent[zones][i] = cplex.linearNumExpr();
                     storageContent[zones][i].addTerm(1.0, E[zones][i - 1]);
-                    storageContent[zones][i].addTerm(storageTechnologyList.get(zones).getChargeEfficiency(), sIn[zones][i - 1]);
-                    storageContent[zones][i].addTerm(-1 / storageTechnologyList.get(zones).getChargeEfficiency(),
+                    storageContent[zones][i].addTerm(storageLocationsList.get(zones).getStorageTechnology()
+                            .getChargeEfficiency(), sIn[zones][i - 1]);
+                    storageContent[zones][i].addTerm(-1
+                            / storageLocationsList.get(zones).getStorageTechnology().getChargeEfficiency(),
                             sOut[zones][i - 1]);
                 }
             }
@@ -476,7 +481,7 @@ Role<DecarbonizationModel> {
 
                 logger.warn("Objective function is: " + cplex.getObjValue());
                 for (int zones = 0; zones < zoneList.size(); zones++) {
-                    for (int i = 0; i < HOURS; i++) {
+                    for (int i = 0; i < HOURS; i = i + 1000) {
                         System.out.println("Hour is: " + (i + 1));
                         System.out.println("Storage in : " + zones + cplex.getValue(sIn[zones][i]));
                         System.out.println("Storage out : " + zones + cplex.getValue(sOut[zones][i]));

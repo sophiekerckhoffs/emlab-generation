@@ -25,8 +25,12 @@ import emlab.gen.domain.technology.PowerGridNode;
 import emlab.gen.domain.technology.StorageLocation;
 
 public interface StorageLocationRepository extends GraphRepository<StorageLocation> {
-    @Query(value = "g.v(technology).in('STORAGE_TECHNOLOGY').filter{it.__type__=='emlab.gen.domain.technology.StorageLocation'}.as('irp').in('STORAGE_NODE').filter{it==g.v(node)}.back('irp').next()", type = QueryType.Gremlin)
+    @Query(value = "g.v(technology).in('STORAGE_TECHNOLOGY').filter{it.__type__=='emlab.gen.domain.technology.StorageLocation'}.as('s').in('STORAGE_NODE').filter{it==g.v(node)}.back('s').next()", type = QueryType.Gremlin)
     StorageLocation findStorageLocationByTechnologyAndNode(@Param("technology") PowerGeneratingTechnology technology,
             @Param("node") PowerGridNode node);
 
+    @Query(value = "g.v(node).out('STORAGE_NODE').filter{it.__type__=='emlab.gen.domain.technology.StorageLocation'}.next()", type = QueryType.Gremlin)
+    StorageLocation findStorageLocationByNode(@Param("node") PowerGridNode node);
+
 }
+
