@@ -77,8 +77,11 @@ Role<DecarbonizationModel> {
         List<Zone> zoneList = Utils.asList(reps.template.findAll(Zone.class));
         List<PowerGeneratingTechnology> technologyList = Utils.asList(reps.powerGeneratingTechnologyRepository
                 .findAllIntermittentPowerGeneratingTechnologies());
+        logger.warn("Technology List" + technologyList.toString());
         List<PowerGeneratingTechnology> storageTechnologyList = Utils.asList(reps.powerGeneratingTechnologyRepository
                 .findAllStoragePowerGeneratingTechnologies());
+        logger.warn("Storage Technology List:" + storageTechnologyList.toString());
+
         Map<Zone, List<PowerGridNode>> zoneToNodeList = new HashMap<Zone, List<PowerGridNode>>();
         for (Zone zone : zoneList) {
             List<PowerGridNode> nodeList = Utils.asList(reps.powerGridNodeRepository.findAllPowerGridNodesByZone(zone));

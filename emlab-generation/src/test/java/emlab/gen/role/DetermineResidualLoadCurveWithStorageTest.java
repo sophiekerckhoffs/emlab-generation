@@ -46,6 +46,7 @@ import emlab.gen.domain.technology.IntermittentResourceProfile;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
 import emlab.gen.domain.technology.PowerGridNode;
 import emlab.gen.domain.technology.PowerPlant;
+import emlab.gen.domain.technology.StorageLocation;
 import emlab.gen.domain.technology.Substance;
 import emlab.gen.repository.BidRepository;
 import emlab.gen.repository.MarketRepository;
@@ -306,9 +307,19 @@ public class DetermineResidualLoadCurveWithStorageTest {
         windTech.setName("WindTech");
         windTech.setIntermittent(true);
 
+        PowerGeneratingTechnology storage = new PowerGeneratingTechnology();
+        storage.setName("Storage");
+        storage.setChargeEfficiency(0.90);
+        storage.setChargingRate(2);
+        storage.setDisChargingRate(2);
+        storage.setMaxStorageCapacity(10);
+        storage.setMinStorageCapacity(0);
+        storage.setStorage(true);
+
         coalTech.persist();
         gasTech.persist();
         windTech.persist();
+        storage.persist();
 
         IntermittentResourceProfile windIntermittentResourceProfile1 = new IntermittentResourceProfile();
         windIntermittentResourceProfile1.setIntermittentTechnology(windTech);
@@ -322,6 +333,17 @@ public class DetermineResidualLoadCurveWithStorageTest {
 
         windIntermittentResourceProfile1.persist();
         windIntermittentResourceProfile2.persist();
+
+        StorageLocation storageLocation1 = new StorageLocation();
+        storageLocation1.setStorageNode(node1);
+        storageLocation1.setStorageTechnology(storage);
+
+        StorageLocation storageLocation2 = new StorageLocation();
+        storageLocation2.setStorageNode(node2);
+        storageLocation2.setStorageTechnology(storage);
+
+        storageLocation1.persist();
+        storageLocation2.persist();
 
         EnergyProducer market1Prod1 = new EnergyProducer();
         market1Prod1.setName("market1Prod1");
