@@ -79,7 +79,7 @@ Role<DecarbonizationModel> {
         List<Zone> zoneList = Utils.asList(reps.template.findAll(Zone.class));
         List<PowerGeneratingTechnology> intermittentTechnologyList = Utils
                 .asList(reps.powerGeneratingTechnologyRepository
-                .findAllIntermittentPowerGeneratingTechnologies());
+                        .findAllIntermittentPowerGeneratingTechnologies());
         logger.warn("intermittent Technology List" + intermittentTechnologyList.toString());
         List<PowerGeneratingTechnology> storageTechnologyList = Utils.asList(reps.powerGeneratingTechnologyRepository
                 .findAllStoragePowerGeneratingTechnologies());
@@ -115,9 +115,9 @@ Role<DecarbonizationModel> {
             columnIterator++;
         }
 
-        Map<Zone, Integer> STORAGECAPUSED = new HashMap<Zone, Integer>();
+        Map<Zone, Integer> NETTOCHARGE = new HashMap<Zone, Integer>();
         for (Zone zone : zoneList) {
-            STORAGECAPUSED.put(zone, columnIterator);
+            NETTOCHARGE.put(zone, columnIterator);
             columnIterator++;
         }
 
@@ -128,9 +128,9 @@ Role<DecarbonizationModel> {
         }
 
 
-        Map<Zone, Integer> RLOADINZONEWITHSTORAGE = new HashMap<Zone, Integer>();
+        Map<Zone, Integer> RLOADINZONERES = new HashMap<Zone, Integer>();
         for (Zone zone : zoneList) {
-            RLOADINZONEWITHSTORAGE.put(zone, columnIterator);
+            RLOADINZONERES.put(zone, columnIterator);
             columnIterator++;
         }
 
@@ -471,35 +471,53 @@ Role<DecarbonizationModel> {
             // solve model
             if (cplex.solve()) {
 
-                DoubleMatrix1D matrixLoadZoneA = new DenseDoubleMatrix1D(loadZoneA);
-                DoubleMatrix1D matrixLoadZoneB = new DenseDoubleMatrix1D(loadZoneB);
+                double[] nettoChargeZoneA = new double[8760];
+                double[] nettoChargeZoneB = new double[8760];
+
+                for (int zones = 0; zones < zoneList.size(); zones++) {
+                    for (int hour = 0; hour < HOURS; hour++) {
+                        if (zones == 0) {
+                            nettoChargeZoneA[hour] = cplex.getValue(sOut[zones][hour])
+                                    - cplex.getValue(sIn[zones][hour]);
+                        }
+                        if (zones == 1) {
+                            nettoChargeZoneB[hour] = cplex.getValue(sOut[zones][hour])
+                                    - cplex.getValue(sOut[zones][hour]);
+                        }
+                    }
+                }
+
+                DoubleMatrix1D nettoChargeZoneAVector = new DenseDoubleMatrix1D(nettoChargeZoneA);
+                DoubleMatrix1D nettoChargeZoneBVector = new DenseDoubleMatrix1D(nettoChargeZoneB);
 
                 for (int zones = 0; zones < zoneList.size(); zones++) {
                     if (zones == 0) {
-                        m.viewColumn(RLOADINZONEWITHSTORAGE.get(zoneList.get(zones))).assign(matrixLoadZoneA,
+                        m.viewColumn(NETTOCHARGE.get(zoneList.get(zones))).assign(nettoChargeZoneAVector,
                                 Functions.plus);
                     }
                     if (zones == 1) {
-                        m.viewColumn(RLOADINZONEWITHSTORAGE.get(zoneList.get(zones))).assign(matrixLoadZoneB,
+                        m.viewColumn(NETTOCHARGE.get(zoneList.get(zones))).assign(nettoChargeZoneBVector,
                                 Functions.plus);
                     }
                 }
 
-                logger.warn("First 10 values of matrix: \n" + m.viewPart(0, 0, 10, m.columns()).toString());
+                for (Zone zone : zoneList) {
+                    for (PowerGridNode node : zoneToNodeList.get(zone)) {
 
-                logger.warn("Objective function is: " + cplex.getObjValue());
-                for (int zones = 0; zones < zoneList.size(); zones++) {
-                    for (int hour = 0; hour < HOURS; hour = hour + 1000) {
-                        System.out.println("Hour is: " + (hour + 1));
-                        System.out.println("Storage in : " + zones + cplex.getValue(sIn[zones][hour]));
-                        System.out.println("Storage out : " + zones + cplex.getValue(sOut[zones][hour]));
-                        System.out.println("Storage : " + zones + cplex.getValue(E[zones][hour]));
-                        System.out.println("I: " + cplex.getValue(I[hour]));
-                        System.out.println("Market in : " + zones + cplex.getValue(mIn[zones][hour]));
-                        System.out.println("Market out : " + zones + cplex.getValue(mOut[zones][hour]));
+                        m.viewColumn(RLOADINZONERES.get(zone)).assign(m.viewColumn(RLOADINZONE.get(zone)));
 
+                        if (zone == zoneA) {
+                            m.viewColumn(RLOADINZONE.get(zone)).assign(nettoChargeZoneAVector, Functions.plus);
+                        }
+                        if (zone == zoneB) {
+                            m.viewColumn(RLOADINZONE.get(zone)).assign(nettoChargeZoneBVector, Functions.plus);
+                        }
                     }
                 }
+
+
+                logger.warn("First 10 values of matrix: \n" + m.viewPart(0, 0, 10, m.columns()).toString());
+
             } else {
                 logger.warn("Model did not solve");
             }
@@ -510,6 +528,7 @@ Role<DecarbonizationModel> {
         } catch (IloException exc) {
             exc.printStackTrace();
         }
+
 
         // 5. Reduce the load factors by obvious
         // spill, that is RES production & storage greater than demand +
