@@ -46,7 +46,6 @@ import emlab.gen.domain.technology.IntermittentResourceProfile;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
 import emlab.gen.domain.technology.PowerGridNode;
 import emlab.gen.domain.technology.PowerPlant;
-import emlab.gen.domain.technology.StorageLocation;
 import emlab.gen.domain.technology.Substance;
 import emlab.gen.repository.BidRepository;
 import emlab.gen.repository.MarketRepository;
@@ -310,11 +309,12 @@ public class DetermineResidualLoadCurveWithStorageTest {
         PowerGeneratingTechnology storageTech = new PowerGeneratingTechnology();
         storageTech.setName("Storage");
         storageTech.setChargeEfficiency(0.90);
-        storageTech.setChargingRate(2);
-        storageTech.setDisChargingRate(2);
-        storageTech.setMaxStorageCapacity(10);
+        storageTech.setChargingRate(200);
+        storageTech.setDisChargingRate(200);
+        storageTech.setMaxStorageCapacity(1000);
         storageTech.setMinStorageCapacity(0);
         storageTech.setStorage(true);
+        storageTech.setIntermittent(true);
 
         coalTech.persist();
         gasTech.persist();
@@ -334,16 +334,6 @@ public class DetermineResidualLoadCurveWithStorageTest {
         windIntermittentResourceProfile1.persist();
         windIntermittentResourceProfile2.persist();
 
-        StorageLocation storageLocation1 = new StorageLocation();
-        storageLocation1.setStorageNode(node1);
-        storageLocation1.setStorageTechnology(storageTech);
-
-        StorageLocation storageLocation2 = new StorageLocation();
-        storageLocation2.setStorageNode(node2);
-        storageLocation2.setStorageTechnology(storageTech);
-
-        storageLocation1.persist();
-        storageLocation2.persist();
 
         EnergyProducer market1Prod1 = new EnergyProducer();
         market1Prod1.setName("market1Prod1");
@@ -513,6 +503,33 @@ public class DetermineResidualLoadCurveWithStorageTest {
 
         ppRes1.persist();
         ppRes2.persist();
+
+        PowerPlant ppStorage1 = new PowerPlant();
+        ppStorage1.setTechnology(storageTech);
+        ppStorage1.setOwner(market1Prod1);
+        ppStorage1.setLocation(node1);
+        ppStorage1.setName("Storage1");
+        ppStorage1.setActualEfficiency(1);
+        ppStorage1.setActualPermittime(0);
+        ppStorage1.setConstructionStartTime(-8);
+        ppStorage1.setActualLeadtime(0);
+        ppStorage1.setDismantleTime(1000);
+        ppStorage1.setExpectedEndOfLife(2);
+
+        PowerPlant ppStorage2 = new PowerPlant();
+        ppStorage2.setTechnology(storageTech);
+        ppStorage2.setOwner(market2Prod2);
+        ppStorage2.setLocation(node2);
+        ppStorage2.setName("Storage2");
+        ppStorage2.setActualEfficiency(1);
+        ppStorage2.setActualPermittime(0);
+        ppStorage2.setConstructionStartTime(-8);
+        ppStorage2.setActualLeadtime(0);
+        ppStorage2.setDismantleTime(1000);
+        ppStorage2.setExpectedEndOfLife(2);
+
+        ppStorage1.persist();
+        ppStorage2.persist();
 
         ClearingPoint coalClearingPoint = new ClearingPoint().persist();
         coalClearingPoint.setAbstractMarket(coalMarket);

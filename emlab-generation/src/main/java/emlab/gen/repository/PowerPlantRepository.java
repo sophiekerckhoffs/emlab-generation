@@ -267,6 +267,10 @@ public interface PowerPlantRepository extends GraphRepository<PowerPlant> {
     Iterable<PowerPlant> findOperationalIntermittentPowerPlantsByPowerGridNode(@Param("gridnode") PowerGridNode node,
             @Param("tick") long tick);
 
+    @Query(value = "g.v(gridnode).in('LOCATION').filter{(it.__type__=='emlab.gen.domain.technology.PowerPlant')}.as('p').out('TECHNOLOGY').filter{it.storage == true}.back('p').filter{((it.constructionStartTime + it.actualPermittime + it.actualLeadtime) <= tick) && (it.dismantleTime > tick)}", type = QueryType.Gremlin)
+    PowerPlant findOperationalStoragePowerPlantsByPowerGridNode(@Param("gridnode") PowerGridNode node,
+            @Param("tick") long tick);
+
     @Query(value = "result = g.v(gridnode).in('LOCATION').filter{(it.__type__=='emlab.gen.domain.technology.PowerPlant')}.as('p').out('TECHNOLOGY').filter{it.intermittent == true}.back('p').filter{((it.constructionStartTime + it.actualPermittime + it.actualLeadtime) <= tick) && (it.dismantleTime > tick)}.out('TECHNOLOGY').sum{it.capacity};"
             + "if(result == null){return 0;} else{return result;}", type = QueryType.Gremlin)
     double calculateCapacityOfIntermittentPowerPlantsByPowerGridNode(@Param("gridnode") PowerGridNode node,

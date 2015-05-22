@@ -32,7 +32,7 @@ import emlab.gen.domain.technology.Interconnector;
 import emlab.gen.domain.technology.IntermittentResourceProfile;
 import emlab.gen.domain.technology.PowerGeneratingTechnology;
 import emlab.gen.domain.technology.PowerGridNode;
-import emlab.gen.domain.technology.StorageLocation;
+import emlab.gen.domain.technology.PowerPlant;
 import emlab.gen.repository.Reps;
 import emlab.gen.util.Utils;
 
@@ -77,12 +77,16 @@ Role<DecarbonizationModel> {
         // original matrix is changed as well (see Colt package).
 
         List<Zone> zoneList = Utils.asList(reps.template.findAll(Zone.class));
-        List<PowerGeneratingTechnology> technologyList = Utils.asList(reps.powerGeneratingTechnologyRepository
+        List<PowerGeneratingTechnology> intermittentTechnologyList = Utils
+                .asList(reps.powerGeneratingTechnologyRepository
                 .findAllIntermittentPowerGeneratingTechnologies());
-        logger.warn("Technology List" + technologyList.toString());
+        logger.warn("intermittent Technology List" + intermittentTechnologyList.toString());
         List<PowerGeneratingTechnology> storageTechnologyList = Utils.asList(reps.powerGeneratingTechnologyRepository
                 .findAllStoragePowerGeneratingTechnologies());
         logger.warn("Storage Technology List:" + storageTechnologyList.toString());
+        List<PowerGeneratingTechnology> technologyList = Utils.asList(reps.powerGeneratingTechnologyRepository
+                .findAllStorageAndIntermittentPowerGeneratingTechnologies());
+        logger.warn("Technology List:" + technologyList.toString());
 
 
         Map<Zone, List<PowerGridNode>> zoneToNodeList = new HashMap<Zone, List<PowerGridNode>>();
@@ -111,20 +115,18 @@ Role<DecarbonizationModel> {
             columnIterator++;
         }
 
+        Map<Zone, Integer> STORAGECAPUSED = new HashMap<Zone, Integer>();
+        for (Zone zone : zoneList) {
+            STORAGECAPUSED.put(zone, columnIterator);
+            columnIterator++;
+        }
+
         Map<Zone, Integer> RLOADINZONE = new HashMap<Zone, Integer>();
         for (Zone zone : zoneList) {
             RLOADINZONE.put(zone, columnIterator);
             columnIterator++;
         }
 
-        // Add new columns for storing load & used storage capacity after
-        // storage
-
-        Map<Zone, Integer> STORAGECAPUSED = new HashMap<Zone, Integer>();
-        for (Zone zone : zoneList) {
-            STORAGECAPUSED.put(zone, columnIterator);
-            columnIterator++;
-        }
 
         Map<Zone, Integer> RLOADINZONEWITHSTORAGE = new HashMap<Zone, Integer>();
         for (Zone zone : zoneList) {
@@ -200,6 +202,7 @@ Role<DecarbonizationModel> {
             }
 
         }
+        logger.warn("First 10 values of matrix: \n " + m.viewPart(0, 0, 10, m.columns()).toString());
 
         // 3. For each power grid node multiply the time series of each
         // intermittent technology type with
@@ -214,7 +217,7 @@ Role<DecarbonizationModel> {
 
             for (PowerGridNode node : zoneToNodeList.get(zone)) {
 
-                for (PowerGeneratingTechnology technology : technologyList) {
+                for (PowerGeneratingTechnology technology : intermittentTechnologyList) {
 
                     double intermittentCapacityOfTechnologyInNode = reps.powerPlantRepository
                             .calculateCapacityOfOperationalIntermittentPowerPlantsByPowerGridNodeAndTechnology(node, technology,
@@ -226,12 +229,14 @@ Role<DecarbonizationModel> {
                     IntermittentResourceProfile intermittentResourceProfile = reps.intermittentResourceProfileRepository
                             .findIntermittentResourceProfileByTechnologyAndNode(technology, node);
 
+
                     // Calculates hourly production of intermittent renewable
                     // technology per node
                     DoubleMatrix1D hourlyProductionPerNode = new DenseDoubleMatrix1D(
                             intermittentResourceProfile.getHourlyArray(getCurrentTick()));
                     m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology)).assign(
                             hourlyProductionPerNode, Functions.plus);
+                    logger.warn("First 10 values of matrix: \n " + m.viewPart(0, 0, 10, m.columns()).toString());
                     hourlyProductionPerNode.assign(Functions.mult(intermittentCapacityOfTechnologyInNode));
                     m.viewColumn(IPROD.get(zone)).assign(hourlyProductionPerNode, Functions.plus);
                     // Add to zonal-technological RES column
@@ -245,6 +250,8 @@ Role<DecarbonizationModel> {
 
             m.viewColumn(RLOADTOTAL).assign(m.viewColumn(RLOADINZONE.get(zone)), Functions.plus);
         }
+
+        logger.warn("First 10 values of matrix: \n " + m.viewPart(0, 0, 10, m.columns()).toString());
         // 4. Optimize residual load curve for storage and assign new values
         // residual load to matrix
 
@@ -265,17 +272,18 @@ Role<DecarbonizationModel> {
 
         double initialStorage = 0;
 
-        List<StorageLocation> storageLocationsList = new ArrayList<StorageLocation>();
+        List<PowerPlant> storagePowerPlantList = new ArrayList<PowerPlant>();
 
         for (Zone zone : zoneList) {
             for (PowerGridNode node : zoneToNodeList.get(zone)) {
 
-                storageLocationsList.add(reps.storageLocationRepository.findStorageLocationByNode(node));
+                storagePowerPlantList.add(reps.powerPlantRepository
+                        .findOperationalStoragePowerPlantsByPowerGridNode(node, getCurrentTick()));
 
             }
         }
 
-        logger.warn(storageLocationsList.toString());
+        logger.warn(storagePowerPlantList.toString());
 
 
         // Start optimization model
@@ -311,8 +319,8 @@ Role<DecarbonizationModel> {
             for (int zones = 0; zones < zoneList.size(); zones++) {
                 E[zones] = cplex.numVarArray(HOURS, zones, zones);
                 for (int hour = 0; hour < HOURS; hour++) {
-                    E[zones][hour] = cplex.numVar(storageLocationsList.get(zones).getStorageTechnology()
-                            .getMinStorageCapacity(), storageLocationsList.get(zones).getStorageTechnology()
+                    E[zones][hour] = cplex.numVar(storagePowerPlantList.get(zones).getTechnology()
+                            .getMinStorageCapacity(), storagePowerPlantList.get(zones).getTechnology()
                             .getMaxStorageCapacity());
                 }
             }
@@ -346,7 +354,7 @@ Role<DecarbonizationModel> {
             for (int zones = 0; zones < zoneList.size(); zones++) {
                 sIn[zones] = cplex.numVarArray(HOURS, zones, zones);
                 for (int hour = 0; hour < HOURS; hour++) {
-                    sIn[zones][hour] = cplex.numVar(0, storageLocationsList.get(zones).getStorageTechnology()
+                    sIn[zones][hour] = cplex.numVar(0, storagePowerPlantList.get(zones).getTechnology()
                             .getChargingRate());
                 }
             }
@@ -358,7 +366,7 @@ Role<DecarbonizationModel> {
             for (int zones = 0; zones < zoneList.size(); zones++) {
                 sOut[zones] = cplex.numVarArray(HOURS, zones, zones);
                 for (int hour = 0; hour < HOURS; hour++) {
-                    sOut[zones][hour] = cplex.numVar(0, storageLocationsList.get(zones).getStorageTechnology()
+                    sOut[zones][hour] = cplex.numVar(0, storagePowerPlantList.get(zones).getTechnology()
                             .getDisChargingRate());
                 }
             }
@@ -376,10 +384,10 @@ Role<DecarbonizationModel> {
                 for (int hour = 1; hour < HOURS; hour++) {
                     storageContent[zones][hour] = cplex.linearNumExpr();
                     storageContent[zones][hour].addTerm(1.0, E[zones][hour - 1]);
-                    storageContent[zones][hour].addTerm(storageLocationsList.get(zones).getStorageTechnology()
+                    storageContent[zones][hour].addTerm(storagePowerPlantList.get(zones).getTechnology()
                             .getChargeEfficiency(), sIn[zones][hour - 1]);
                     storageContent[zones][hour].addTerm(-1
-                            / storageLocationsList.get(zones).getStorageTechnology().getChargeEfficiency(),
+                            / storagePowerPlantList.get(zones).getTechnology().getChargeEfficiency(),
                             sOut[zones][hour - 1]);
                 }
             }

@@ -34,10 +34,13 @@ GraphRepository<PowerGeneratingTechnology> {
     @Query(value = "g.idx('__types__')[[className:'emlab.gen.domain.technology.PowerGeneratingTechnology']].filter{it.name==name}", type = QueryType.Gremlin)
     Iterable<PowerGeneratingTechnology> findPowerGeneratingTechnologyByName(@Param("name") String name);
 
-    @Query(value = "g.idx('__types__')[[className:'emlab.gen.domain.technology.PowerGeneratingTechnology']].filter{it.intermittent==true}", type = QueryType.Gremlin)
+    @Query(value = "g.idx('__types__')[[className:'emlab.gen.domain.technology.PowerGeneratingTechnology']].filter{it.intermittent==true && it.storage==null}", type = QueryType.Gremlin)
     Iterable<PowerGeneratingTechnology> findAllIntermittentPowerGeneratingTechnologies();
 
     @Query(value = "g.idx('__types__')[[className:'emlab.gen.domain.technology.PowerGeneratingTechnology']].filter{it.storage==true}", type = QueryType.Gremlin)
     Iterable<PowerGeneratingTechnology> findAllStoragePowerGeneratingTechnologies();
+
+    @Query(value = "g.idx('__types__')[[className:'emlab.gen.domain.technology.PowerGeneratingTechnology']].filter{it.intermittent==true}", type = QueryType.Gremlin)
+    Iterable<PowerGeneratingTechnology> findAllStorageAndIntermittentPowerGeneratingTechnologies();
 
 }
