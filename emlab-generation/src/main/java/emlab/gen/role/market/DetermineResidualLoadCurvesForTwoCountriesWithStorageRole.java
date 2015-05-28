@@ -121,6 +121,12 @@ Role<DecarbonizationModel> {
             columnIterator++;
         }
 
+        Map<Zone, Integer> STORAGECAP = new HashMap<Zone, Integer>();
+        for (Zone zone : zoneList) {
+            STORAGECAP.put(zone, columnIterator);
+            columnIterator++;
+        }
+
         Map<Zone, Integer> RLOADINZONE = new HashMap<Zone, Integer>();
         for (Zone zone : zoneList) {
             RLOADINZONE.put(zone, columnIterator);
@@ -477,11 +483,11 @@ Role<DecarbonizationModel> {
                 for (int zones = 0; zones < zoneList.size(); zones++) {
                     for (int hour = 0; hour < HOURS; hour++) {
                         if (zones == 0) {
-                            nettoChargeZoneA[hour] = cplex.getValue(sOut[zones][hour])
-                                    - cplex.getValue(sIn[zones][hour]);
+                            nettoChargeZoneA[hour] = cplex.getValue(sIn[zones][hour])
+                                    - cplex.getValue(sOut[zones][hour]);
                         }
                         if (zones == 1) {
-                            nettoChargeZoneB[hour] = cplex.getValue(sOut[zones][hour])
+                            nettoChargeZoneB[hour] = cplex.getValue(sIn[zones][hour])
                                     - cplex.getValue(sOut[zones][hour]);
                         }
                     }
@@ -498,6 +504,56 @@ Role<DecarbonizationModel> {
                     if (zones == 1) {
                         m.viewColumn(NETTOCHARGE.get(zoneList.get(zones))).assign(nettoChargeZoneBVector,
                                 Functions.plus);
+                    }
+                }
+
+                double[] storageCapA = new double[8760];
+                double[] storageCapB = new double[8760];
+
+                for (int zones = 0; zones < zoneList.size(); zones++) {
+                    for (int hour = 0; hour < HOURS; hour++) {
+                        if (zones == 0) {
+                            storageCapA[hour] = cplex.getValue(E[zones][hour]);
+                        }
+                        if (zones == 1) {
+                            storageCapB[hour] = cplex.getValue(E[zones][hour]);
+                        }
+                    }
+                }
+
+                DoubleMatrix1D storageCapAVector = new DenseDoubleMatrix1D(nettoChargeZoneA);
+                DoubleMatrix1D storageCapBVector = new DenseDoubleMatrix1D(nettoChargeZoneB);
+
+                for (int zones = 0; zones < zoneList.size(); zones++) {
+                    if (zones == 0) {
+                        m.viewColumn(STORAGECAP.get(zoneList.get(zones))).assign(storageCapAVector, Functions.plus);
+                    }
+                    if (zones == 1) {
+                        m.viewColumn(STORAGECAP.get(zoneList.get(zones))).assign(storageCapBVector, Functions.plus);
+                    }
+                }
+
+                double[] interConnector = new double[8760];
+
+                for (int hour = 0; hour < HOURS; hour++) {
+                    interConnector[hour] = cplex.getValue(I[hour]);
+                }
+
+                DoubleMatrix1D interConnectorVector = new DenseDoubleMatrix1D(interConnector);
+                m.viewColumn(INTERCONNECTOR).assign(interConnectorVector, Functions.plus);
+
+                for (Zone zone : zoneList) {
+
+                    for (PowerGridNode node : zoneToNodeList.get(zone)) {
+
+                        for (PowerGeneratingTechnology technology : storageTechnologyList) {
+
+                            m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
+                                    .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
+                            m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
+                                    .assign(m.viewColumn(STORAGECAP.get(zone)), Functions.div);
+
+                        }
                     }
                 }
 
@@ -525,9 +581,10 @@ Role<DecarbonizationModel> {
                 m.viewColumn(RLOADINZONE.get(zone)).assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
 
             }
-            // m.viewColumn(RLOADTOTALRES).assign(m.viewColumn(RLOADTOTAL),Functions.plus);
+            m.viewColumn(RLOADTOTALRES).assign(m.viewColumn(RLOADTOTAL), Functions.plus);
             m.viewColumn(RLOADTOTAL).assign(m.viewColumn(RLOADINZONE.get(zone)), Functions.plus);
         }
+        logger.warn("First 10 values of matrix: \n" + m.viewPart(0, 0, 10, m.columns()).toString());
 
         // 5. Reduce the load factors by obvious
         // spill, that is RES production & storage greater than demand +
