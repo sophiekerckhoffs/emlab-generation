@@ -136,7 +136,7 @@ Role<DecarbonizationModel> {
 
         int RLOADTOTAL = columnIterator;
         columnIterator++;
-        int RLOADTOTALWITHSTORAGE = columnIterator;
+        int RLOADTOTALRES = columnIterator;
         columnIterator++;
         int INTERCONNECTOR = columnIterator;
         columnIterator++;
@@ -374,7 +374,7 @@ Role<DecarbonizationModel> {
             IloNumVar[] I = new IloNumVar[HOURS]; // Power flow from zone A
             // to B
             for (int hour = 0; hour < HOURS; hour++) {
-                I[hour] = cplex.numVar(-m.get(hour, INTERCONNECTOR), m.get(hour, INTERCONNECTOR));
+                I[hour] = cplex.numVar(-interConnectorCapacity, interConnectorCapacity);
             }
 
             // define expressions
@@ -501,20 +501,6 @@ Role<DecarbonizationModel> {
                     }
                 }
 
-                for (Zone zone : zoneList) {
-                    for (PowerGridNode node : zoneToNodeList.get(zone)) {
-
-                        m.viewColumn(RLOADINZONERES.get(zone)).assign(m.viewColumn(RLOADINZONE.get(zone)));
-
-                        if (zone == zoneA) {
-                            m.viewColumn(RLOADINZONE.get(zone)).assign(nettoChargeZoneAVector, Functions.plus);
-                        }
-                        if (zone == zoneB) {
-                            m.viewColumn(RLOADINZONE.get(zone)).assign(nettoChargeZoneBVector, Functions.plus);
-                        }
-                    }
-                }
-
 
                 logger.warn("First 10 values of matrix: \n" + m.viewPart(0, 0, 10, m.columns()).toString());
 
@@ -529,6 +515,19 @@ Role<DecarbonizationModel> {
             exc.printStackTrace();
         }
 
+        // Assign new values to matrix
+
+        for (Zone zone : zoneList) {
+            for (PowerGridNode node : zoneToNodeList.get(zone)) {
+
+                m.viewColumn(RLOADINZONERES.get(zone)).assign(m.viewColumn(RLOADINZONE.get(zone)));
+
+                m.viewColumn(RLOADINZONE.get(zone)).assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
+
+            }
+            // m.viewColumn(RLOADTOTALRES).assign(m.viewColumn(RLOADTOTAL),Functions.plus);
+            m.viewColumn(RLOADTOTAL).assign(m.viewColumn(RLOADINZONE.get(zone)), Functions.plus);
+        }
 
         // 5. Reduce the load factors by obvious
         // spill, that is RES production & storage greater than demand +
