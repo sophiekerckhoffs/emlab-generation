@@ -507,31 +507,6 @@ Role<DecarbonizationModel> {
                     }
                 }
 
-                double[] storageCapA = new double[8760];
-                double[] storageCapB = new double[8760];
-
-                for (int zones = 0; zones < zoneList.size(); zones++) {
-                    for (int hour = 0; hour < HOURS; hour++) {
-                        if (zones == 0) {
-                            storageCapA[hour] = cplex.getValue(E[zones][hour]);
-                        }
-                        if (zones == 1) {
-                            storageCapB[hour] = cplex.getValue(E[zones][hour]);
-                        }
-                    }
-                }
-
-                DoubleMatrix1D storageCapAVector = new DenseDoubleMatrix1D(nettoChargeZoneA);
-                DoubleMatrix1D storageCapBVector = new DenseDoubleMatrix1D(nettoChargeZoneB);
-
-                for (int zones = 0; zones < zoneList.size(); zones++) {
-                    if (zones == 0) {
-                        m.viewColumn(STORAGECAP.get(zoneList.get(zones))).assign(storageCapAVector, Functions.plus);
-                    }
-                    if (zones == 1) {
-                        m.viewColumn(STORAGECAP.get(zoneList.get(zones))).assign(storageCapBVector, Functions.plus);
-                    }
-                }
 
                 double[] interConnector = new double[8760];
 
@@ -542,16 +517,20 @@ Role<DecarbonizationModel> {
                 DoubleMatrix1D interConnectorVector = new DenseDoubleMatrix1D(interConnector);
                 m.viewColumn(INTERCONNECTOR).assign(interConnectorVector, Functions.plus);
 
+
                 for (Zone zone : zoneList) {
 
                     for (PowerGridNode node : zoneToNodeList.get(zone)) {
 
                         for (PowerGeneratingTechnology technology : storageTechnologyList) {
 
+                            DoubleMatrix1D maxStorageCapacity = new DenseDoubleMatrix1D(8760);
+                            maxStorageCapacity.assign(technology.getMaxStorageCapacity());
+
                             m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
-                                    .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
+                            .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
                             m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
-                                    .assign(m.viewColumn(STORAGECAP.get(zone)), Functions.div);
+                            .assign(maxStorageCapacity, Functions.div);
 
                         }
                     }
