@@ -42,7 +42,7 @@ import emlab.gen.role.investment.GenericInvestmentRole;
 import emlab.gen.role.market.ClearCommodityMarketRole;
 import emlab.gen.role.market.ClearIterativeCO2AndElectricitySpotMarketTwoCountryRole;
 import emlab.gen.role.market.CreatingFinancialReports;
-import emlab.gen.role.market.DetermineResidualLoadCurvesForTwoCountriesRole;
+import emlab.gen.role.market.DetermineResidualLoadCurvesForTwoCountriesWithStorageRole;
 import emlab.gen.role.market.ProcessAcceptedBidsRole;
 import emlab.gen.role.market.ProcessAcceptedPowerPlantDispatchRole;
 import emlab.gen.role.market.ReassignPowerPlantsToLongTermElectricityContractsRole;
@@ -113,6 +113,8 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
     MarketStabilityReserveRole marketStabilityReserveRole;
     @Autowired
     private DetermineResidualLoadCurvesForTwoCountriesWithStorageRole determineResidualLoadCurve;
+    @Autowired
+    private CreatingFinancialReports creatingFinancialReports;
 
     @Autowired
     Reps reps;
