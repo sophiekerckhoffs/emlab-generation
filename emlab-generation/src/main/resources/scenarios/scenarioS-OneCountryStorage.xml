@@ -25,7 +25,7 @@
 	<!-- Decarbonization Model -->
 	<bean id="decarbonizationModel" class="emlab.gen.domain.agent.DecarbonizationModel"
 		p:name="Decarbonization Model" p:simulationLength="${simulationLength}"
-		p:co2TradingImplemented="true"
+		p:co2TradingImplemented="false"
 		p:realRenewableDataImplemented="true"
 		p:iterationSpeedFactor="3" p:iterationSpeedCriterion="0.005"
 		p:capDeviationCriterion="0.03" p:deletionOldPPDPBidsAndCashFlowsEnabled="true"
@@ -74,11 +74,12 @@
 		</bean>
 		
 		<!--  Intermittent Production Profiles -->
-	<bean id="windSpeedNodeNL" class="emlab.gen.domain.technology.IntermittentResourceProfile" p:filename="/home/sophie/Data/WindSeriesNL2010.csv">
+	<bean id="windSpeedNodeNL" class="emlab.gen.domain.technology.IntermittentResourceProfile" p:filename="/data/WindSeriesNL2010.csv">
 		<property name="intermittentTechnology" ref="windPGT"></property>
 		<property name="intermittentProductionNode" ref="beneluxNode"></property>
 	</bean>
-	<bean id="demandNL" class="emlab.gen.trend.HourlyCSVTimeSeries" p:filename="/home/sophie/Data/TimeSeriesNL2010.csv" />
+	<bean id="demandNL" class="emlab.gen.trend.HourlyCSVTimeSeries" p:filename="/data/TimeSeriesNL2010.csv" />
+	
 	
 		<!-- Segments of load duration curves -->
 				<bean id="segment1" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="10"
@@ -425,7 +426,7 @@
 						<key>
 							<ref bean="windPGT" />
 						</key>
-						<value>0.07</value>
+						<value>0</value>
 					</entry>
 				</map>
 			</property>
@@ -783,7 +784,7 @@
 			p:peakSegmentDependentAvailability="0.08"
 			p:applicableForLongTermContract="true">
 		</bean>
-		
+			
 		<bean id="pvInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="-0.0247970888" p:start="2048300" />
 		<bean id="pvFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="-0.0049911825" p:start="20480" />
 		<bean id="pvEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0" p:start="1" />
@@ -821,5 +822,4 @@
 			<property name="location" value="classpath:scenarios/parametersB-OneCountry.properties" />
 		</bean>
 
-		<bean></bean>
 </beans>

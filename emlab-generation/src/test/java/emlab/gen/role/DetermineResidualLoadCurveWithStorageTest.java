@@ -334,7 +334,6 @@ public class DetermineResidualLoadCurveWithStorageTest {
         windIntermittentResourceProfile1.persist();
         windIntermittentResourceProfile2.persist();
 
-
         EnergyProducer market1Prod1 = new EnergyProducer();
         market1Prod1.setName("market1Prod1");
         market1Prod1.setCash(0);
