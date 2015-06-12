@@ -15,6 +15,7 @@
  ******************************************************************************/
 package emlab.gen.role.capacitymarket;
 
+import org.apache.commons.math.stat.regression.SimpleRegression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,6 @@ import emlab.gen.domain.agent.Regulator;
 import emlab.gen.domain.gis.Zone;
 import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
 import emlab.gen.repository.Reps;
-import emlab.gen.util.GeometricTrendRegression;
 
 /**
  * @author Kaveri
@@ -60,18 +60,23 @@ public class ForecastDemandRole extends AbstractRole<Regulator> implements Role<
          */
 
         double expectedDemandFactor = 0d;
-        if (getCurrentTick() < 2) {
+        if (capabilityYear > getCurrentTick()) {
+            if (getCurrentTick() < 2) {
 
-            expectedDemandFactor = market.getDemandGrowthTrend().getValue(getCurrentTick());
-        } else {
+                expectedDemandFactor = market.getDemandGrowthTrend().getValue(getCurrentTick());
+            } else {
 
-            GeometricTrendRegression gtr = new GeometricTrendRegression();
-            for (long time = getCurrentTick() - 1; time > getCurrentTick() - 1
-                    - regulator.getNumberOfYearsLookingBackToForecastDemand()
-                    && time >= 0; time = time - 1) {
-                gtr.addData(time, market.getDemandGrowthTrend().getValue(time));
+                SimpleRegression sr = new SimpleRegression();
+                for (long time = getCurrentTick() - 1; time > getCurrentTick() - 1
+                        - regulator.getNumberOfYearsLookingBackToForecastDemand()
+                        && time >= 0; time = time - 1) {
+                    sr.addData(time, market.getDemandGrowthTrend().getValue(time));
+                }
+                expectedDemandFactor = sr.predict(capabilityYear);
             }
-            expectedDemandFactor = gtr.predict(capabilityYear);
+
+        } else {
+            expectedDemandFactor = market.getDemandGrowthTrend().getValue(getCurrentTick());
         }
         logger.warn("ExpectedDemandFactor for this tick: " + expectedDemandFactor);
         logger.warn("demand factor " + market.getDemandGrowthTrend().getValue(getCurrentTick()));

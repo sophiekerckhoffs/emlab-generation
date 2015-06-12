@@ -62,10 +62,12 @@ public class SubmitCapacityBidToMarketRoleTest {
         // for bidding a positive value
         Segment S1 = new Segment();
         S1.setLengthInHours(20);
+        S1.setSegmentID(1);
         S1.persist();
 
         Segment S2 = new Segment();
         S2.setLengthInHours(30);
+        S2.setSegmentID(2);
         S2.persist();
 
         SegmentLoad SG1 = new SegmentLoad();
@@ -152,11 +154,13 @@ public class SubmitCapacityBidToMarketRoleTest {
         e1.setName("E1");
         e1.setCash(0);
         e1.setPriceMarkUp(1);
+        e1.setInvestorMarket(market);
 
         EnergyProducer e2 = new EnergyProducer();
         e2.setCash(0);
         e2.setPriceMarkUp(1);
         e2.setName("E2");
+        e2.setInvestorMarket(market);
 
         e1.persist();
         e2.persist();
@@ -282,14 +286,16 @@ public class SubmitCapacityBidToMarketRoleTest {
         clearingPoint1.setSegment(S1);
         clearingPoint1.setAbstractMarket(market);
         clearingPoint1.setPrice(25);
-        clearingPoint1.setTime(0);
+        clearingPoint1.setTime(-1);
+        clearingPoint1.setForecast(false);
         clearingPoint1.persist();
 
         SegmentClearingPoint clearingPoint2 = new SegmentClearingPoint();
         clearingPoint2.setSegment(S2);
         clearingPoint2.setAbstractMarket(market);
         clearingPoint2.setPrice(7);
-        clearingPoint2.setTime(0);
+        clearingPoint2.setTime(-1);
+        clearingPoint2.setForecast(false);
         clearingPoint2.persist();
 
         for (EnergyProducer ep : reps.energyProducerRepository

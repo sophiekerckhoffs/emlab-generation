@@ -44,7 +44,7 @@ public class SimpleCapacityMarketMainRole extends AbstractRole<CapacityMarket> i
     SubmitCapacityBidToMarketRole submitCapacityBidToMarketRole;
 
     @Autowired
-    ClearCapacityMarketRole clearCapacityMarketRole;
+    ClearCapacityMarketNewRole clearCapacityMarketNewRole;
 
     @Autowired
     PaymentFromConsumerToProducerForCapacityRole paymentFromConsumerToProducerforCapacityRole;
@@ -60,14 +60,13 @@ public class SimpleCapacityMarketMainRole extends AbstractRole<CapacityMarket> i
         logger.warn("Forecast demand role run");
 
         // Energy producers submit Bids to Capacity market
-        for (EnergyProducer producer : reps.energyProducerRepository
-                .findAllEnergyProducersExceptForRenewableTargetInvestorsAtRandom()) {
+        for (EnergyProducer producer : reps.genericRepository.findAllAtRandom(EnergyProducer.class)) {
             submitCapacityBidToMarketRole.act(producer);
         }
         logger.warn("******************capacity bids submitted****************************");
 
         // Clear capacity market
-        clearCapacityMarketRole.act(regulator);
+        clearCapacityMarketNewRole.act(regulator);
 
         logger.warn("************************Capacity Market cleared******************************");
 

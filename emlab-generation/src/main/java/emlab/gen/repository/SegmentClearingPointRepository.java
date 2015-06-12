@@ -41,11 +41,12 @@ public interface SegmentClearingPointRepository extends GraphRepository<SegmentC
     // @Param("market") ElectricitySpotMarket electricitySpotMarket);
 
     @Query(value = "g.v(segment).in('SEGMENT_POINT').propertyFilter('time', FilterPipe.Filter.EQUAL, time).propertyFilter('forecast', FilterPipe.Filter.EQUAL, forecast).as('x').out('MARKET_POINT').idFilter(market, FilterPipe.Filter.EQUAL).back('x')", type = QueryType.Gremlin)
-    SegmentClearingPoint findOneSegmentClearingPointForMarketSegmentAndTime(@Param("time") long time,
+    SegmentClearingPoint findSegmentClearingPointForMarketSegmentAndTime(@Param("time") long time,
             @Param("segment") Segment segment, @Param("market") ElectricitySpotMarket electricitySpotMarket,
             @Param("forecast") boolean forecast);
 
     @Query(value = "g.v(segment).in('SEGMENT_POINT').propertyFilter('time', FilterPipe.Filter.EQUAL, time).as('x').out('MARKET_POINT').idFilter(market, FilterPipe.Filter.EQUAL).back('x')", type = QueryType.Gremlin)
     SegmentClearingPoint findOneSegmentClearingPointForMarketSegmentAndTime(@Param("time") long time,
-            @Param("segment") Segment segment, @Param("market") ElectricitySpotMarket electricitySpotMarket);
+            @Param("segment") Segment segment, @Param("market") ElectricitySpotMarket electricitySpotMarket,
+            @Param("forecast") boolean forecast);
 }
