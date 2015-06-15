@@ -426,7 +426,7 @@
 						<key>
 							<ref bean="windPGT" />
 						</key>
-						<value>0</value>
+						<value>0.17</value>
 					</entry>
 				</map>
 			</property>
