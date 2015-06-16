@@ -57,32 +57,45 @@ createReportPdf <- function(tick,listOfDFs) {
                                                          SegmentClearingPoints, DemandLevels, paste(outputFolder,"figures/",sep=""), ".pdf"))
   markets=countries=sub(pattern=" electricity spot market",replacement="",x=unique(listOfDFs$SegmentClearingPoints$market))
   cat("\\report{",tick,"}{",markets[1],"}{",markets[2],"}\n",sep="")
-}
-
-createPostRunPlots <- function(listOfDFs, listOfVariablesAndCaptions){
-  names(listOfDFs$simpleQueriesDF)<-sapply(names(listOfDFs$simpleQueriesDF), function(x){gsub(x=x, pattern=" ", replacement="_")})
-  for(variableAndCaption in listOfVariablesAndCaptions){
-    filename=sub(x=variableAndCaption[[1]], pattern=' ', replacement='_')
-    with(listOfDFs, printTimeSeriesForVariable(df=simpleQueriesDF, variable=filename, ylabel=variableAndCaption[[2]], filetype=".pdf", filename=filename, analysisFolder=paste(outputFolder,"/figures/", sep="")))
-    cat("\\postrunplot{",filename,"}{",variableAndCaption[[3]],"}\n",sep="")
   }
-}
-if(!file.exists(outputFolder)){
+
+createPostRunPlots <- function(listOfDFs, listOfVariablesAndCaptions) {
+  
+  names(listOfDFs$simpleQueriesDF) <- sapply(names(listOfDFs$simpleQueriesDF), function(x){gsub(x=x, pattern=" ", replacement="_")})
+  
+  #names(listOfDFs$simpleQueriesDF) <- sapply(names(listOfDFs$simpleQueriesDF), function(x){gsub(x=x, pattern=" ", replacement="_")})
+  
+  for(variableAndCaption in listOfVariablesAndCaptions) {
+    filename=sub(x=variableAndCaption[[1]], pattern=' ', replacement='_')
+    with(listOfDFs, printTimeSeriesForVariable(df=simpleQueriesDF, variable=filename, ylabel=variableAndCaption[[2]], filetype=".pdf",   filename=filename, analysisFolder=paste(outputFolder,"/figures/", sep="")))
+    cat("\\postrunplot{",filename,"}{",variableAndCaption[[3]],"}\n",sep="")
+    }
+  }
+
+if(!file.exists(outputFolder)) {
   dir.create(outputFolder)
-}
+  }
+
 if(!file.exists(paste(outputFolder,"/figures/", sep=""))){
   dir.create(paste(outputFolder,"/figures/", sep=""))
+  }
+
+if(exists("scenario") & !dryRun){
+  if(!is.null(scenario)) message(paste("Load Scenario",scenario,loadScenario(scenario)))
 }
-if(exists("scenario") & !dryRun){if(!is.null(scenario)) message(paste("Load Scenario",scenario,loadScenario(scenario)))}
+
 setwd(outputFolder)
+
 if(!dryRun){
   runResult<-runSimulation(createReportPdf,noOfTicks, runName)
 } else{
   if(headlessRun){
     getResultListFromHeadlessModelRun(headlessOutputFolder,headlessModelRunName,runName)
   }
+  
   runResult<-runSimulation(createReportPdf,noOfTicks,runName,paste(outputFolder,runName,".RData",sep=""))
 }
+
 createPostRunPlots(runResult, list(list("Avg_El_PricesinEURpMWh_Country A", "Electr. Price [Eur/MWh]", "Average Eletricity Price in Country A"),list("Avg_El_PricesinEURpMWh_Country B", "Electr. Price [Eur/MWh]", "Average Eletricity Price in Country B"), list("CO2Emissions_inTonpA",expression(paste(CO[2], " Emissions [Ton/a]", sep="")), "CO$_2$ Emissions"), list("CO2Auction", expression(paste(CO[2]," Price [EUR/t]", sep="")), "CO$_2$ Price")))
 @
 
