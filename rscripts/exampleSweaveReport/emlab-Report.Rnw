@@ -13,9 +13,9 @@ setwd("~/emlab-generation/rscripts/")
 outputFolder<-"~/emlab-generation/rscripts/exampleSweaveReport/"
 runName<-"exampleSweaveReport"
 headlessOutputFolder<-"~/Desktop/emlabGen/output/"
-headlessModelRunName<-"rScriptTest"
+headlessModelRunName<-"test1"
 noOfTicks<-40
-#scenario<-NULL #Scenario name can be set here, incl. the xml ending
+scenario <- "/home/sophie/emlab-generation/emlab-generation/src/main/resources/scenarios/scenarioS-OneCountryStorage.xml" #Scenario name can be set here, incl. the xml ending
 dryRun<-FALSE
 headlessRun<-FALSE
 source("rConfig.R")
@@ -63,8 +63,6 @@ createPostRunPlots <- function(listOfDFs, listOfVariablesAndCaptions) {
   
   names(listOfDFs$simpleQueriesDF) <- sapply(names(listOfDFs$simpleQueriesDF), function(x){gsub(x=x, pattern=" ", replacement="_")})
   
-  #names(listOfDFs$simpleQueriesDF) <- sapply(names(listOfDFs$simpleQueriesDF), function(x){gsub(x=x, pattern=" ", replacement="_")})
-  
   for(variableAndCaption in listOfVariablesAndCaptions) {
     filename=sub(x=variableAndCaption[[1]], pattern=' ', replacement='_')
     with(listOfDFs, printTimeSeriesForVariable(df=simpleQueriesDF, variable=filename, ylabel=variableAndCaption[[2]], filetype=".pdf",   filename=filename, analysisFolder=paste(outputFolder,"/figures/", sep="")))
@@ -96,7 +94,11 @@ if(!dryRun){
   runResult<-runSimulation(createReportPdf,noOfTicks,runName,paste(outputFolder,runName,".RData",sep=""))
 }
 
-createPostRunPlots(runResult, list(list("Avg_El_PricesinEURpMWh_Country A", "Electr. Price [Eur/MWh]", "Average Eletricity Price in Country A"),list("Avg_El_PricesinEURpMWh_Country B", "Electr. Price [Eur/MWh]", "Average Eletricity Price in Country B"), list("CO2Emissions_inTonpA",expression(paste(CO[2], " Emissions [Ton/a]", sep="")), "CO$_2$ Emissions"), list("CO2Auction", expression(paste(CO[2]," Price [EUR/t]", sep="")), "CO$_2$ Price")))
+createPostRunPlots(runResult, list(
+  list("Avg_El_PricesinEURpMWh_Country A", "Electr. Price [Eur/MWh]", "Average Eletricity Price in Country A"),
+  list("Avg_El_PricesinEURpMWh_Country B", "Electr. Price [Eur/MWh]", "Average Eletricity Price in Country B"), 
+  list("CO2Emissions_inTonpA",expression(paste(CO[2], " Emissions [Ton/a]", sep="")), "CO$_2$ Emissions"), 
+  list("CO2Auction", expression(paste(CO[2]," Price [EUR/t]", sep="")), "CO$_2$ Price")))
 @
 
 \end{document}

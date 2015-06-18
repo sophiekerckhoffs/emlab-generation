@@ -428,12 +428,6 @@
 						</key>
 						<value>0.17</value>
 					</entry>
-					<entry>
-						<key>
-							<ref bean="stoerage" />
-						</key>
-						<value>0.17</value>
-					</entry>
 				</map>
 			</property>
 			<property name="nodes">
@@ -821,28 +815,6 @@
 		<bean id="nuclearInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0" p:start="2874800" />
 		<bean id="nuclearFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0" p:start="71870" />
 		<bean id="nuclearEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0.00001" p:start=".33" />
-		
-		<bean id="storage" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-			p:name="Storage" p:capacity="600" 
-			p:investmentCostTimeSeries-ref="storageInvestmentCostTimeSeries"
-			p:fixedOperatingCostTimeSeries-ref="storageFixedOperatingCostTimeSeries"
-			p:efficiencyTimeSeries-ref="storageEfficiencyTimeSeries" 
-			p:co2CaptureEffciency="0" 
-			p:depreciationTime="15"
-			p:minimumRunningHours="0"
-			p:fixedOperatingCostModifierAfterLifetime=".05" p:expectedLifetime="25"
-			p:expectedLeadtime="1" p:expectedPermittime="1" p:minimumFuelQuality="1"
-			p:maximumInstalledCapacityFractionInCountry="1"
-			p:maximumInstalledCapacityFractionPerAgent="1"
-			p:baseSegmentDependentAvailability="0.40"
-			p:peakSegmentDependentAvailability="0.05"
-			p:applicableForLongTermContract="false"
-			p:intermittent="true">
-		</bean>
-		
-		<bean id="storageInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="-0.0017610467" p:start="1214600" />
-		<bean id="storageFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="-0.0004101736" p:start="18220" />
-		<bean id="storageEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0" p:start="1" />
 	
 		<!-- Parameter file -->
 		<bean id="projectPropertyConfigurer"
