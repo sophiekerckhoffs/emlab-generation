@@ -430,7 +430,7 @@
 					</entry>
 					<entry>
 						<key>
-							<ref bean="stoerage" />
+							<ref bean="storage" />
 						</key>
 						<value>0.17</value>
 					</entry>
@@ -837,7 +837,8 @@
 			p:baseSegmentDependentAvailability="0.40"
 			p:peakSegmentDependentAvailability="0.05"
 			p:applicableForLongTermContract="false"
-			p:intermittent="true">
+			p:intermittent="true"
+			p:storage="true">
 		</bean>
 		
 		<bean id="storageInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="-0.0017610467" p:start="1214600" />
