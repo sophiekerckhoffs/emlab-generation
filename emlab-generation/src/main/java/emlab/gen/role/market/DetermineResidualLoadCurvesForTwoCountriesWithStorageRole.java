@@ -46,7 +46,7 @@ import emlab.gen.util.Utils;
  */
 @RoleComponent
 public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends AbstractRole<DecarbonizationModel>
-        implements Role<DecarbonizationModel> {
+implements Role<DecarbonizationModel> {
 
     @Autowired
     private Reps reps;
@@ -318,7 +318,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                         E[zoneList.indexOf(zone)][hour] = cplex.numVar(storagePowerPlantList
                                 .get(zoneList.indexOf(zone)).getTechnology().getMinStorageCapacity(),
                                 storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology()
-                                .getMaxStorageCapacity());
+                                        .getMaxStorageCapacity());
                     }
                 }
 
@@ -521,9 +521,9 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                                 maxStorageCapacity.assign(technology.getMaxStorageCapacity());
 
                                 m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
-                                        .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
+                                .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
                                 m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
-                                        .assign(maxStorageCapacity, Functions.div);
+                                .assign(maxStorageCapacity, Functions.div);
 
                             }
                         }
@@ -646,7 +646,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                     m.viewColumn(IPROD.get(zoneSmallerResidual)).set(row,
                             m.get(row, LOADINZONE.get(zoneSmallerResidual)));
                     m.viewColumn(IPROD.get(zoneBiggerResidual))
-                    .set(row, m.get(row, LOADINZONE.get(zoneBiggerResidual)));
+                            .set(row, m.get(row, LOADINZONE.get(zoneBiggerResidual)));
                 } else if ((smallerResidual < 0) && (biggerResidual > 0)) {
                     numberOfHoursWhereOneCountryExportsREStoTheOther++;
                     // In case the country with the smaller residual can export
@@ -667,7 +667,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                             m.set(row, INTERCONNECTOR, (m.get(row, INTERCONNECTOR) - smallerResidual));
                             m.viewColumn(RLOADINZONE.get(zoneSmallerResidual)).set(row, 0);
                             m.viewColumn(RLOADINZONE.get(zoneBiggerResidual))
-                            .set(row, biggerResidual + smallerResidual);
+                                    .set(row, biggerResidual + smallerResidual);
                         } else {
                             m.set(row, INTERCONNECTOR, 0);
                             m.viewColumn(RLOADINZONE.get(zoneSmallerResidual)).set(row, 0);
@@ -699,7 +699,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                 m.viewColumn(RLOADTOTAL).set(
                         row,
                         m.get(row, RLOADINZONE.get(zoneSmallerResidual))
-                        + m.get(row, RLOADINZONE.get(zoneBiggerResidual)));
+                                + m.get(row, RLOADINZONE.get(zoneBiggerResidual)));
             }
 
             // First divide it by new value. Spilled values are than greater
@@ -776,6 +776,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
             }
             upperBoundSplit[noSegments - 1] = 0;
         }
+
         // 7. Create DynamicBins as representation for segments and for later
         // calculation of means, no etc. Per bin one sort of information (e.g.
         // residual
@@ -853,7 +854,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
         for (Zone zone : zoneList) {
             for (PowerGridNode node : zoneToNodeList.get(zone)) {
                 for (PowerGeneratingTechnology technology : reps.powerGeneratingTechnologyRepository
-                        .findAllIntermittentPowerGeneratingTechnologies()) {
+                        .findAllStorageAndIntermittentPowerGeneratingTechnologies()) {
                     DynamicBin1D[] currentBinArray = loadFactorBinMap.get(zone).get(node).get(technology);
                     int columnNumber = TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology);
                     currentSegmentID = 1;
@@ -899,6 +900,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                     currentSegmentID++;
                     hoursAssignedToCurrentSegment = 0;
                 }
+
                 m.set(row, SEGMENTFORZONE.get(zone), currentSegmentID);
                 if (currentSegmentID != m.get(row, SEGMENT)) {
                     hoursInDifferentSegment++;
@@ -906,6 +908,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                 }
                 hoursAssignedToCurrentSegment++;
             }
+
             if (hoursInDifferentSegment != 0) {
                 averageSegmentDeviation = averageSegmentDeviation / hoursInDifferentSegment;
                 averageSegmentDeviation = averageSegmentDeviation * 1000;
@@ -989,7 +992,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
             // logger.warn(segmentLength);
         }
 
-        // 9. Store the load factors in the IntermittentTechnologyLoadFactors
+        // 8. Store the load factors in the IntermittentTechnologyLoadFactors
 
         String loadFactors;
         for (Zone zone : zoneList) {
@@ -997,17 +1000,17 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
 
                 for (PowerGeneratingTechnology technology : technologyList) {
                     String loadFactorString = new String(technology.getName() + " LF in " + node.getName() + ":");
-                    // logger.warn("Bins for " + zone + ", " + node + "and " +
-                    // technology);
+                    logger.warn("Bins for " + zone + ", " + node + "and " + technology);
                     IntermittentTechnologyNodeLoadFactor intTechnologyNodeLoadFactor = reps.intermittentTechnologyNodeLoadFactorRepository
                             .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node, technology);
+                    logger.warn("technologyLoadFactor is" + technology + " " + intTechnologyNodeLoadFactor);
                     if (intTechnologyNodeLoadFactor == null) {
                         intTechnologyNodeLoadFactor = new IntermittentTechnologyNodeLoadFactor().persist();
                         intTechnologyNodeLoadFactor.setLoadFactors(new double[noSegments]);
                         intTechnologyNodeLoadFactor.setNode(node);
                         intTechnologyNodeLoadFactor.setTechnology(technology);
                     }
-                    ;
+
                     it = 1;
                     for (DynamicBin1D bin : loadFactorBinMap.get(zone).get(node).get(technology)) {
                         // logger.warn("Segment " + it + "\n      Size: " +
@@ -1028,7 +1031,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
             }
         }
 
-        // 8. Store the segment duration and the average load in that segment
+        // 9. Store the segment duration and the average load in that segment
         // per country.
 
         Iterable<SegmentLoad> segmentLoads = reps.segmentLoadRepository.findAll();
@@ -1064,7 +1067,6 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                             * intermittentCapacityOfTechnologyInZone;
 
                 }
-
                 // logger.warn(technology.getName() + " is producing " +
                 // productionOfTechInZone + " MWh in "
                 // + zone.getName() + ".");

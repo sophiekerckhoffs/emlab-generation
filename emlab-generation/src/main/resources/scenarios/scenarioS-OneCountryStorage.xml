@@ -379,6 +379,7 @@
 			<property name="powerGridNode" ref="beneluxNode" />
 		</bean>
 		
+			
 		<!-- Initial portfolios -->
 	
 	
@@ -428,12 +429,6 @@
 						</key>
 						<value>0.17</value>
 					</entry>
-					<entry>
-						<key>
-							<ref bean="storage" />
-						</key>
-						<value>0.17</value>
-					</entry>
 				</map>
 			</property>
 			<property name="nodes">
@@ -450,6 +445,28 @@
 					<ref bean="energyProducerD" />
 				</list>
 			</property>
+		</bean>
+		
+		<!--  Power plants -->
+		
+		<bean id="storageA1" class="emlab.gen.domain.technology.PowerPlant" p:label="Storage Power Plant A1"
+		p:constructionStartTime="-20" p:actualLeadtime="4" p:actualEfficiency="1"
+		p:actualPermittime="1" p:expectedEndOfLife="40" p:actualInvestedCapital="10000000"
+		p:dismantleTime="1000" p:actualNominalCapacity="600"
+		p:name="Energy Producer A - Storage">
+			<property name="technology" ref="storage"/>
+			<property name="owner" ref="energyProducerA"/>
+			<property name="location" ref="beneluxNode"/>
+			<property name="loan" ref="loanppStorage1"/>
+		</bean>	
+		
+		<!--  Power plant loans -->
+		
+		<bean id="loanppStorage1" class="emlab.gen.domain.contract.Loan"
+		p:amountPerPayment="1000000" p:numberOfPaymentsDone="20"
+		p:totalNumberOfPayments="20" p:loanStartTime="-20">
+		<property name="from" ref="energyProducerA"/>
+		<property name="to" ref="bigBank"/>
 		</bean>
 	
 		<!-- CO2 Tax -->
@@ -838,7 +855,12 @@
 			p:peakSegmentDependentAvailability="0.05"
 			p:applicableForLongTermContract="false"
 			p:intermittent="true"
-			p:storage="true">
+			p:storage="true"
+			p:chargeEfficiency="0.90"
+			p:maxStorageCapacity="600"
+			p:minStorageCapacity="0"
+			p:chargingRate="100"
+			p:disChargingRate="100">
 		</bean>
 		
 		<bean id="storageInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="-0.0017610467" p:start="1214600" />
