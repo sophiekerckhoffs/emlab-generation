@@ -83,44 +83,84 @@
 	
 		<!-- Segments of load duration curves -->
 				<bean id="segment1" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="10"
+					p:segmentID="40" />
+				<bean id="segment2" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="80"
+					p:segmentID="39" />
+				<bean id="segment3" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="38" />
+				<bean id="segment4" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="37" />
+				<bean id="segment5" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="36" />
+				<bean id="segment6" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="35" />
+				<bean id="segment7" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="34" />
+				<bean id="segment8" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="33" />
+				<bean id="segment9" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="32" />
+				<bean id="segment10" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="31" />
+				<bean id="segment11" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="30" />
+				<bean id="segment12" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="29" />
+				<bean id="segment13" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="28" />
+				<bean id="segment14" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="27" />
+				<bean id="segment15" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="26" />
+				<bean id="segment16" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="25" />
+				<bean id="segment17" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="24" />
+				<bean id="segment18" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="23" />
+				<bean id="segment19" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="22" />
+				<bean id="segment20" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
+					p:segmentID="21" />
+				<bean id="segment21" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="20" />
-				<bean id="segment2" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="50"
+				<bean id="segment22" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="19" />
-				<bean id="segment3" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment23" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="18" />
-				<bean id="segment4" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment24" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="17" />
-				<bean id="segment5" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment25" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="16" />
-				<bean id="segment6" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment26" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="15" />
-				<bean id="segment7" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment27" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="14" />
-				<bean id="segment8" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment28" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="13" />
-				<bean id="segment9" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment29" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="12" />
-				<bean id="segment10" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment30" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="11" />
-				<bean id="segment11" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment31" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="10" />
-				<bean id="segment12" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment32" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="9" />
-				<bean id="segment13" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment33" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="8" />
-				<bean id="segment14" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment34" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="7" />
-				<bean id="segment15" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment35" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="6" />
-				<bean id="segment16" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment36" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="5" />
-				<bean id="segment17" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="576"
+				<bean id="segment37" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="245"
 					p:segmentID="4" />
-				<bean id="segment18" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="50"
+				<bean id="segment38" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="80"
 					p:segmentID="3" />
-				<bean id="segment19" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="9"
+				<bean id="segment39" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="14"
 					p:segmentID="2" />
-				<bean id="segment20" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="1"
+				<bean id="segment40" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="1"
 					p:segmentID="1" />
 	
 		<!-- Markets -->
@@ -154,6 +194,26 @@
 					<ref bean="segment18nl" />
 					<ref bean="segment19nl" />
 					<ref bean="segment20nl" />
+					<ref bean="segment21nl" />
+					<ref bean="segment22nl" />
+					<ref bean="segment23nl" />
+					<ref bean="segment24nl" />
+					<ref bean="segment25nl" />
+					<ref bean="segment26nl" />
+					<ref bean="segment27nl" />
+					<ref bean="segment28nl" />
+					<ref bean="segment29nl" />
+					<ref bean="segment30nl" />
+					<ref bean="segment31nl" />
+					<ref bean="segment32nl" />
+					<ref bean="segment33nl" />
+					<ref bean="segment34nl" />
+					<ref bean="segment35nl" />
+					<ref bean="segment36nl" />
+					<ref bean="segment37nl" />
+					<ref bean="segment38nl" />
+					<ref bean="segment39nl" />
+					<ref bean="segment40nl" />
 				</set>
 	
 			</property>
@@ -239,6 +299,86 @@
 		<bean id="segment20nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
 			p:baseLoad="${segment20nl}">
 			<property name="segment" ref="segment20" />
+		</bean>
+		<bean id="segment21nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment21nl}">
+			<property name="segment" ref="segment21" />
+		</bean>
+		<bean id="segment22nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment22nl}">
+			<property name="segment" ref="segment22" />
+		</bean>
+		<bean id="segment23nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment23nl}">
+			<property name="segment" ref="segment23" />
+		</bean>
+		<bean id="segment24nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment24nl}">
+			<property name="segment" ref="segment24" />
+		</bean>
+		<bean id="segment25nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment25nl}">
+			<property name="segment" ref="segment25" />
+		</bean>
+		<bean id="segment26nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment26nl}">
+			<property name="segment" ref="segment26" />
+		</bean>
+		<bean id="segment27nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment27nl}">
+			<property name="segment" ref="segment27" />
+		</bean>
+		<bean id="segment28nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment28nl}">
+			<property name="segment" ref="segment28" />
+		</bean>
+		<bean id="segment29nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment29nl}">
+			<property name="segment" ref="segment29" />
+		</bean>
+		<bean id="segment30nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment30nl}">
+			<property name="segment" ref="segment30" />
+		</bean>
+		<bean id="segment31nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment31nl}">
+			<property name="segment" ref="segment31" />
+		</bean>
+		<bean id="segment32nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment32nl}">
+			<property name="segment" ref="segment32" />
+		</bean>
+		<bean id="segment33nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment33nl}">
+			<property name="segment" ref="segment33" />
+		</bean>
+		<bean id="segment34nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment34nl}">
+			<property name="segment" ref="segment34" />
+		</bean>
+		<bean id="segment35nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment35nl}">
+			<property name="segment" ref="segment35" />
+		</bean>
+		<bean id="segment36nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment36nl}">
+			<property name="segment" ref="segment36" />
+		</bean>
+		<bean id="segment37nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment37nl}">
+			<property name="segment" ref="segment37" />
+		</bean>
+		<bean id="segment38nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment38nl}">
+			<property name="segment" ref="segment38" />
+		</bean>
+		<bean id="segment39nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment39nl}">
+			<property name="segment" ref="segment39" />
+		</bean>
+		<bean id="segment40nl" class="emlab.gen.domain.market.electricity.SegmentLoad"
+			p:baseLoad="${segment40nl}">
+			<property name="segment" ref="segment40" />
 		</bean>
 	
 		<!-- Commodity Markets -->
@@ -870,7 +1010,7 @@
 		<!-- Parameter file -->
 		<bean id="projectPropertyConfigurer"
 			class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-			<property name="location" value="classpath:scenarios/parametersB-OneCountry.properties" />
+			<property name="location" value="classpath:scenarios/parametersB-OneCountry40Segments.properties" />
 		</bean>
 
 </beans>
