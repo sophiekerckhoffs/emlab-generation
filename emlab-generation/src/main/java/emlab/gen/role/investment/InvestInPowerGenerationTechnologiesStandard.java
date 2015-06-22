@@ -315,6 +315,7 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                         double sumCapacityRevenue = 0d;
                         double totalPeakCapacityAtFuturePoint = 0d;
                         double totalPeakDemandAtFuturePoint = 0d;
+                        double resPeakCapacity = 0d;
 
                         if ((agent.isSimpleCapacityMarketEnabled()) && (regulator != null)) {
 
@@ -322,49 +323,49 @@ public class InvestInPowerGenerationTechnologiesStandard<T extends EnergyProduce
                                     .calculatePeakCapacityOfOperationalPowerPlantsInMarket(market, futureTimePoint);
                             expectedDemand.get(market).doubleValue();
                             totalPeakDemandAtFuturePoint = reps.segmentLoadRepository.peakLoadbyMarketandTime(market,
-                                    futureTimePoint) * (1 + regulator.getReserveMargin());
+                                    futureTimePoint);
 
-                            if ((totalPeakDemandAtFuturePoint - totalPeakCapacityAtFuturePoint > 0)) {
+                            TargetInvestor tInvestor = reps.targetInvestorRepository.findInvestorByMarket(market);
+                            for (PowerPlant resPlant : reps.powerPlantRepository.findOperationalPowerPlantsByOwner(
+                                    tInvestor, futureTimePoint)) {
+                                resPeakCapacity = resPeakCapacity
+                                        + (resPlant.getActualNominalCapacity() * resPlant.getTechnology()
+                                                .getPeakSegmentDependentAvailability());
+                            }
 
-                                SimpleRegression sr = new SimpleRegression();
-                                long time = 0l;
-                                for (time = getCurrentTick(); time > getCurrentTick()
-                                        - agent.getNumberOfYearsBacklookingForForecasting()
-                                        && time > 0; time = time - 1) {
-                                    double capacityRevenueTemp = reps.capacityMarketRepository
-                                            .findOneClearingPointForTimeAndCapacityMarket(time, cMarket).getPrice();
-                                    sr.addData(time, capacityRevenueTemp);
-                                    // sumCapacityRevenue +=
-                                    // capacityRevenueTemp;
-                                }
+                            totalPeakCapacityAtFuturePoint = totalPeakCapacityAtFuturePoint
+                                    - resPeakCapacity
+                                    + (plant.getActualNominalCapacity() * plant.getTechnology()
+                                            .getPeakSegmentDependentAvailability());
 
-                                sumCapacityRevenue = (sr.predict(futureTimePoint));
+                            if (totalPeakCapacityAtFuturePoint <= (totalPeakDemandAtFuturePoint * (1 + (regulator
+                                    .getReserveMargin() - regulator.getReserveDemandLowerMargin())))) {
 
-                                if (sumCapacityRevenue > regulator.getCapacityMarketPriceCap()) {
-                                    sumCapacityRevenue = regulator.getCapacityMarketPriceCap();
-                                }
-                                // logger.warn(" And capacity (peak segment) is"
-                                // +
-                                // plant.getExpectedAvailableCapacity(futureTimePoint,
-                                // peakSegment, numberOfSegments));
-                                // logger.warn(" And capacity (null) is"
-                                // +
-                                // plant.getExpectedAvailableCapacity(futureTimePoint,
-                                // null, numberOfSegments));
                                 capacityRevenue = plant.getTechnology().getCapacity()
                                         * plant.getTechnology().getPeakSegmentDependentAvailability()
-                                        * sumCapacityRevenue;
+                                        * regulator.getCapacityMarketPriceCap();
+                            }
 
-                                // capacityRevenue =
-                                // plant.getExpectedAvailableCapacity(futureTimePoint,
-                                // peakSegment,
-                                // numberOfSegments) * sumCapacityRevenue /
-                                // (getCurrentTick() - time);
+                            if ((totalPeakCapacityAtFuturePoint > (totalPeakDemandAtFuturePoint * (1 + (regulator
+                                    .getReserveMargin() - regulator.getReserveDemandLowerMargin()))) && totalPeakCapacityAtFuturePoint <= (totalPeakDemandAtFuturePoint * (1 + (regulator
+                                    .getReserveMargin() + regulator.getReserveDemandUpperMargin()))))) {
+
+                                double reserveMargin = 1 + regulator.getReserveMargin();
+                                double lowerMargin = reserveMargin - regulator.getReserveDemandLowerMargin();
+                                double upperMargin = reserveMargin + regulator.getReserveDemandUpperMargin();
+                                double marketCap = regulator.getCapacityMarketPriceCap();
+
+                                capacityRevenue = (-(marketCap / (upperMargin - lowerMargin)) * ((totalPeakCapacityAtFuturePoint / totalPeakDemandAtFuturePoint) - upperMargin))
+                                        * plant.getTechnology().getCapacity()
+                                        * plant.getTechnology().getPeakSegmentDependentAvailability();
+                            }
+                            if (totalPeakCapacityAtFuturePoint > (totalPeakDemandAtFuturePoint * (1 + (regulator
+                                    .getReserveMargin() + regulator.getReserveDemandUpperMargin())))) {
+                                capacityRevenue = 0;
                             }
                         } else {
                             capacityRevenue = 0;
                         }
-                        // logger.warn("Capacity Revenue" + capacityRevenue);
 
                         operatingProfit = operatingProfit + capacityRevenue;
 

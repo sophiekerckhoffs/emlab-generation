@@ -60,7 +60,8 @@ public class SimpleCapacityMarketMainRole extends AbstractRole<CapacityMarket> i
         logger.warn("Forecast demand role run");
 
         // Energy producers submit Bids to Capacity market
-        for (EnergyProducer producer : reps.genericRepository.findAllAtRandom(EnergyProducer.class)) {
+        for (EnergyProducer producer : reps.energyProducerRepository
+                .findAllEnergyProducersExceptForRenewableTargetInvestorsAtRandom()) {
             submitCapacityBidToMarketRole.act(producer);
         }
         logger.warn("******************capacity bids submitted****************************");
