@@ -46,7 +46,7 @@ import emlab.gen.util.Utils;
  */
 @RoleComponent
 public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends AbstractRole<DecarbonizationModel>
-implements Role<DecarbonizationModel> {
+        implements Role<DecarbonizationModel> {
 
     @Autowired
     private Reps reps;
@@ -318,7 +318,7 @@ implements Role<DecarbonizationModel> {
                         E[zoneList.indexOf(zone)][hour] = cplex.numVar(storagePowerPlantList
                                 .get(zoneList.indexOf(zone)).getTechnology().getMinStorageCapacity(),
                                 storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology()
-                                        .getMaxStorageCapacity());
+                                .getMaxStorageCapacity());
                     }
                 }
 
@@ -521,9 +521,9 @@ implements Role<DecarbonizationModel> {
                                 maxStorageCapacity.assign(technology.getMaxStorageCapacity());
 
                                 m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
-                                .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
+                                        .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
                                 m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
-                                .assign(maxStorageCapacity, Functions.div);
+                                        .assign(maxStorageCapacity, Functions.div);
 
                             }
                         }
@@ -646,7 +646,7 @@ implements Role<DecarbonizationModel> {
                     m.viewColumn(IPROD.get(zoneSmallerResidual)).set(row,
                             m.get(row, LOADINZONE.get(zoneSmallerResidual)));
                     m.viewColumn(IPROD.get(zoneBiggerResidual))
-                            .set(row, m.get(row, LOADINZONE.get(zoneBiggerResidual)));
+                    .set(row, m.get(row, LOADINZONE.get(zoneBiggerResidual)));
                 } else if ((smallerResidual < 0) && (biggerResidual > 0)) {
                     numberOfHoursWhereOneCountryExportsREStoTheOther++;
                     // In case the country with the smaller residual can export
@@ -667,7 +667,7 @@ implements Role<DecarbonizationModel> {
                             m.set(row, INTERCONNECTOR, (m.get(row, INTERCONNECTOR) - smallerResidual));
                             m.viewColumn(RLOADINZONE.get(zoneSmallerResidual)).set(row, 0);
                             m.viewColumn(RLOADINZONE.get(zoneBiggerResidual))
-                                    .set(row, biggerResidual + smallerResidual);
+                            .set(row, biggerResidual + smallerResidual);
                         } else {
                             m.set(row, INTERCONNECTOR, 0);
                             m.viewColumn(RLOADINZONE.get(zoneSmallerResidual)).set(row, 0);
@@ -699,7 +699,7 @@ implements Role<DecarbonizationModel> {
                 m.viewColumn(RLOADTOTAL).set(
                         row,
                         m.get(row, RLOADINZONE.get(zoneSmallerResidual))
-                                + m.get(row, RLOADINZONE.get(zoneBiggerResidual)));
+                        + m.get(row, RLOADINZONE.get(zoneBiggerResidual)));
             }
 
             // First divide it by new value. Spilled values are than greater
@@ -999,7 +999,7 @@ implements Role<DecarbonizationModel> {
             for (PowerGridNode node : zoneToNodeList.get(zone)) {
 
                 for (PowerGeneratingTechnology technology : technologyList) {
-                    String loadFactorString = new String(technology.getName() + " LF in " + node.getName() + ":");
+                    String loadFactorString = new String(technology.getName() + " LF in 2 " + node.getName() + ":");
                     logger.warn("Bins for " + zone + ", " + node + "and " + technology);
                     IntermittentTechnologyNodeLoadFactor intTechnologyNodeLoadFactor = reps.intermittentTechnologyNodeLoadFactorRepository
                             .findIntermittentTechnologyNodeLoadFactorForNodeAndTechnology(node, technology);
