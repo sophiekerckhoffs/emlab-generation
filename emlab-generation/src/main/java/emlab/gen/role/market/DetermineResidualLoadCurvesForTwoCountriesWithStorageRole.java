@@ -261,7 +261,21 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
 
         int HOURS = m.rows(); // amount of hours in simulation
 
-        double initialStorage = 0;
+        double[] initialStorage = new double[zoneList.size()];
+        double[] endValueStorage = new double[zoneList.size()];
+
+        if (getCurrentTick() == 0) {
+            for (Zone zone : zoneList) {
+                initialStorage[zoneList.indexOf(zone)] = 0;
+            }
+            ;
+        } else {
+            for (Zone zone : zoneList) {
+                initialStorage[zoneList.indexOf(zone)] = endValueStorage[zoneList.indexOf(zone)];
+            }
+        }
+
+        logger.warn("initial value Storage " + initialStorage[0]);
 
         List<PowerPlant> storagePowerPlantList = new ArrayList<PowerPlant>();
 
@@ -443,7 +457,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                 // define constraints
 
                 for (int zones = 0; zones < zoneList.size(); zones++) {
-                    cplex.addEq(E[zones][0], initialStorage);
+                    cplex.addEq(E[zones][0], initialStorage[zones]);
                 }
 
                 for (int zones = 0; zones < zoneList.size(); zones++) {
@@ -527,6 +541,10 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
 
                             }
                         }
+                    }
+
+                    for (Zone zone : zoneList) {
+                        endValueStorage[zoneList.indexOf(zone)] = cplex.getValue(E[zoneList.indexOf(zone)][8759]);
                     }
 
                     logger.warn("First 10 values of matrix: \n" + m.viewPart(0, 0, 10, m.columns()).toString());
