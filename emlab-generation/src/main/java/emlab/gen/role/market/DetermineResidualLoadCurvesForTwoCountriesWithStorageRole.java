@@ -261,22 +261,6 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
 
         int HOURS = m.rows(); // amount of hours in simulation
 
-        double[] initialStorage = new double[zoneList.size()];
-        double[] endValueStorage = new double[zoneList.size()];
-
-        if (getCurrentTick() == 0) {
-            for (Zone zone : zoneList) {
-                initialStorage[zoneList.indexOf(zone)] = 0;
-            }
-            ;
-        } else {
-            for (Zone zone : zoneList) {
-                initialStorage[zoneList.indexOf(zone)] = endValueStorage[zoneList.indexOf(zone)];
-            }
-        }
-
-        logger.warn("initial value Storage " + initialStorage[0]);
-
         List<PowerPlant> storagePowerPlantList = new ArrayList<PowerPlant>();
 
         for (Zone zone : zoneList) {
@@ -297,6 +281,22 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
             emptyString = "fasle";
         }
         logger.warn(emptyString);
+
+        double[] initialStorage = new double[storagePowerPlantList.size()];
+
+        logger.warn("Current tick is " + getCurrentTick());
+
+        if (getCurrentTick() == 0) {
+            for (PowerPlant pp : storagePowerPlantList) {
+                initialStorage[storagePowerPlantList.indexOf(pp)] = 0;
+            }
+        } else {
+            for (PowerPlant pp : storagePowerPlantList) {
+                initialStorage[storagePowerPlantList.indexOf(pp)] = pp.getActualStorageContentEndOfYear();
+            }
+        }
+
+        logger.warn("initial value Storage " + initialStorage[0]);
 
         // Start optimization model
 
@@ -543,8 +543,11 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                         }
                     }
 
-                    for (Zone zone : zoneList) {
-                        endValueStorage[zoneList.indexOf(zone)] = cplex.getValue(E[zoneList.indexOf(zone)][8759]);
+                    for (PowerPlant pp : storagePowerPlantList) {
+                        pp.setActualStorageContentEndOfYear(cplex.getValue(E[storagePowerPlantList.indexOf(pp)][8759]));
+                        logger.warn("E value storage ending "
+                                + cplex.getValue(E[storagePowerPlantList.indexOf(pp)][8759]));
+                        logger.warn("End value storage ending is " + pp.getActualStorageContentEndOfYear());
                     }
 
                     logger.warn("First 10 values of matrix: \n" + m.viewPart(0, 0, 10, m.columns()).toString());
