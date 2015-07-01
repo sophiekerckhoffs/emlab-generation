@@ -474,7 +474,7 @@
 
 <bean id = "energyProducerA" class = "emlab.gen.domain.agent.EnergyProducer"
 	p:name="Energy Producer A" p:cash="${startCashA}"
-	p:investmentRole-ref="standardInvestmentRole"
+	p:investmentRole="standardInvestmentRole"
 	p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	p:simpleCapacityMarketEnabled="${simpleCapacityMarketEnabled}"
 	p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
@@ -484,10 +484,10 @@
 	p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
-	p:investmentRole-ref="beneluxElectricitySpotMarket" />
+	p:investmentMarket="beneluxElectricitySpotMarket" />
 <bean id = "energyProducerB" class = "emlab.gen.domain.agent.EnergyProducer"
-	p:name="Energy Producer B" p:cash="${startCashA}"
-	p:investmentRole-ref="standardInvestmentRole"
+	p:name="Energy Producer B" p:cash="${startCashB}"
+	p:investmentRole="standardInvestmentRole"
 	p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	p:simpleCapacityMarketEnabled="${simpleCapacityMarketEnabled}"
 	p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
@@ -497,10 +497,10 @@
 	p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
-	p:investmentRole-ref="beneluxElectricitySpotMarket" />
+	p:investmentMarket="beneluxElectricitySpotMarket" />
 <bean id = "energyProducerC" class = "emlab.gen.domain.agent.EnergyProducer"
-	p:name="Energy Producer C" p:cash="${startCashA}"
-	p:investmentRole-ref="standardInvestmentRole"
+	p:name="Energy Producer C" p:cash="${startCashC}"
+	p:investmentRole="standardInvestmentRole"
 	p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	p:simpleCapacityMarketEnabled="${simpleCapacityMarketEnabled}"
 	p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
@@ -510,10 +510,10 @@
 	p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
-	p:investmentRole-ref="beneluxElectricitySpotMarket" />
+	p:investmentMarket="beneluxElectricitySpotMarket" />
 <bean id = "energyProducerD" class = "emlab.gen.domain.agent.EnergyProducer"
-	p:name="Energy Producer D" p:cash="${startCashA}"
-	p:investmentRole-ref="standardInvestmentRole"
+	p:name="Energy Producer D" p:cash="${startCashD}"
+	p:investmentRole="standardInvestmentRole"
 	p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	p:simpleCapacityMarketEnabled="${simpleCapacityMarketEnabled}"
 	p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
@@ -523,10 +523,10 @@
 	p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
-	p:investmentRole-ref="beneluxElectricitySpotMarket" />
+	p:investmentMarket="beneluxElectricitySpotMarket" />
 <bean id = "energyProducerE" class = "emlab.gen.domain.agent.EnergyProducer"
-	p:name="Energy Producer E" p:cash="${startCashA}"
-	p:investmentRole-ref="standardInvestmentRole"
+	p:name="Energy Producer E" p:cash="${startCashE}"
+	p:investmentRole="standardInvestmentRole"
 	p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	p:simpleCapacityMarketEnabled="${simpleCapacityMarketEnabled}"
 	p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
@@ -536,10 +536,10 @@
 	p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
-	p:investmentRole-ref="beneluxElectricitySpotMarket" />
+	p:investmentMarket="beneluxElectricitySpotMarket" />
 <bean id = "energyProducerF" class = "emlab.gen.domain.agent.EnergyProducer"
-	p:name="Energy Producer F" p:cash="${startCashA}"
-	p:investmentRole-ref="standardInvestmentRole"
+	p:name="Energy Producer F" p:cash="${startCashF}"
+	p:investmentRole="standardInvestmentRole"
 	p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	p:simpleCapacityMarketEnabled="${simpleCapacityMarketEnabled}"
 	p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
@@ -549,10 +549,10 @@
 	p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
-	p:investmentRole-ref="beneluxElectricitySpotMarket" />
+	p:investmentMarket="beneluxElectricitySpotMarket" />
 <bean id = "energyProducerG" class = "emlab.gen.domain.agent.EnergyProducer"
-	p:name="Energy Producer G" p:cash="${startCashA}"
-	p:investmentRole-ref="standardInvestmentRole"
+	p:name="Energy Producer G" p:cash="${startCashG}"
+	p:investmentRole="standardInvestmentRole"
 	p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	p:simpleCapacityMarketEnabled="${simpleCapacityMarketEnabled}"
 	p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
@@ -562,10 +562,10 @@
 	p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
-	p:investmentRole-ref="beneluxElectricitySpotMarket" />
+	p:investmentMarket="beneluxElectricitySpotMarket" />
 <bean id = "energyProducerH" class = "emlab.gen.domain.agent.EnergyProducer"
-	p:name="Energy Producer H" p:cash="${startCashA}"
-	p:investmentRole-ref="standardInvestmentRole"
+	p:name="Energy Producer H" p:cash="${startCashH}"
+	p:investmentRole="standardInvestmentRole"
 	p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	p:simpleCapacityMarketEnabled="${simpleCapacityMarketEnabled}"
 	p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
@@ -575,10 +575,10 @@
 	p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
-	p:investmentRole-ref="beneluxElectricitySpotMarket" />
+	p:investmentMarket="beneluxElectricitySpotMarket" />
 <bean id = "energyProducerI" class = "emlab.gen.domain.agent.EnergyProducer"
-	p:name="Energy Producer I" p:cash="${startCashA}"
-	p:investmentRole-ref="standardInvestmentRole"
+	p:name="Energy Producer I" p:cash="${startCashI}"
+	p:investmentRole="standardInvestmentRole"
 	p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	p:simpleCapacityMarketEnabled="${simpleCapacityMarketEnabled}"
 	p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
@@ -588,10 +588,10 @@
 	p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
-	p:investmentRole-ref="beneluxElectricitySpotMarket" />
+	p:investmentMarket="beneluxElectricitySpotMarket" />
 <bean id = "energyProducerJ" class = "emlab.gen.domain.agent.EnergyProducer"
-	p:name="Energy Producer J" p:cash="${startCashA}"
-	p:investmentRole-ref="standardInvestmentRole"
+	p:name="Energy Producer J" p:cash="${startCashJ}"
+	p:investmentRole="standardInvestmentRole"
 	p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
 	p:simpleCapacityMarketEnabled="${simpleCapacityMarketEnabled}"
 	p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
@@ -601,19 +601,120 @@
 	p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
 	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
-	p:investmentRole-ref="beneluxElectricitySpotMarket" />
+	p:investmentMarket="beneluxElectricitySpotMarket" />
 	
-<bean id = "standardInvestmentRole" class = "emlab.gen.role.investment.InvestInPowerGeneringTechnologiesRole" />
+<bean id = "standardInvestmentRole" class = "emlab.gen.role.investment.InvestInPowerGeneratingTechnologiesRole" />
+<bean id = "targetInvestmentRole" class = "emlab.gen.role.investment.InvestInPowerGeneratingTechnologiesRole" />	
 	
+<!-- Renewable Targets NL -->
+<bean id = "renewableTargetInvestorCountryNL" class = "emlab.gen.domain.agent.TargetInvestor"
+	p:name="Renewable Target Investor NL" p:cash-ref="${startCashTarget}"
+	p:investmentRole-ref="targetInvestmentRole"
+	p:priceMarkUp="1.0"
+	p:investorMarket-ref="beneluxElectricitySpotMarket"
+	p:equityInterestRate="0.12" p:loanInterestRate="0.09"
+	p:debtRatioOfInvestments="0.7">
+	<property name="powerGenerationTechnologyTargets">
+		<set>
+			<ref bean = "windTargetCountryNL" />
+			<ref bean = "windOffshoreTargetCountryNL"/>
+			<ref bean = "biomassTargetCountryNL" />
+			<ref bean = "pvTargetCountryNL" />
+		</set>
+	</property>
+</bean>
 
+<bean id = "windTargetCountryNL" class = "emlab.gen.domain.policy.PowerGeneratingTechnologyTarget"
+	p:trend-ref="windTrendCountryNL" p:powerGeneratingTechnology-ref="windPGT" />
+<bean id = "windTrendCountryNL" class = "emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/RESTargetsNL.csv"
+	p:delimiter="," p:variableName="WindOnshore" />
 	
-
-<!-- Renewable Targets Zone X -->
+<bean id = "windOffshoreTargetCountryNL" class = "emlab.gen.domain.policy.PowerGeneratingTechnologyTarget"
+	p:trend-ref="windOffshoreTrendCountryNL" p:powerGeneratingTechnology-ref="windOffshorePGT" />
+<bean id = "windOffshoreTrendCountryNL" class = "emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/RESTargetsNL.csv"
+	p:delimiter="," p:variableName="WindOffshore" />
+	
+<bean id = "biomassTargetCountryNL" class = "emlab.gen.domain.policy.PowerGeneratingTechnologyTarget"
+	p:trend-ref="biomassTrendCountryNL" p:powerGeneratingTechnology-ref="biomassPGT" />
+<bean id = "biomassTrendCountryNL" class = "emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/RESTargetsNL.csv"
+	p:delimiter="," p:variableName="Biomass" />
+	
+<bean id = "pvTargetCountryNL" class = "emlab.gen.domain.policy.PowerGeneratingTechnologyTarget"
+	p:trend-ref="pvTrendCountryNL" p:powerGeneratingTechnology-ref="photovolticPGT" />
+<bean id = "pvTrendCountryNL" class = "emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/RESTargetsNL.csv"
+	p:delimiter="," p:variableName="Photovoltic" />
+	
 <!-- PowerGenerationTechnology Node Limits -->
+<bean id = "ligniteNodeLimitNl" class = "emlab.gen.domain.technology.PowerGeneratingTechnologyNodeLimit"
+	p:permanentUpperCapacityLimit="0">
+	<property name="powerGeneratingTechnology" ref="lignitePGT" />
+	<property name="powerGridNode" ref="beneluxNode" />
+</bean>
+
+<!-- Inital Portofolios -->
+<bean id = "powerPlantManufacturer" class = "emlab.gen.domain.agent.PowerPlantManufacturer"
+	p:name="Power Plant Manufacturer" />
+<bean id = "bigBank" class = "emlab.gen.domain.agent.BigBank" 
+	p:name="Big Bank" />
+<bean id = "powerPlantMaintainer" class = "emlab.gen.domain.agent.PowerPlantMaintainer"
+	p:name="Power Plant Mainter" />
+	
 <!-- Power plant Factory -->
+<bean id = "powerPlantList" class = "emlab.gen.domain.factory.PowerPlantCSVFactory"
+	p:csvFile="/data/PowerPlantsNL.csv">
+	<property name="producers">
+		<list>
+			<ref bean="energyProducerA" />
+			<ref bean="energyProducerB" />
+			<ref bean="energyProducerC" />
+			<ref bean="energyProducerD" />
+			<ref bean="energyProducerE" />
+			<ref bean="energyProducerF" />
+			<ref bean="energyProducerG" />
+			<ref bean="energyProducerH" />
+			<ref bean="energyProducerI" />
+			<ref bean="energyProducerJ" />
+		</list>
+	</property>
+	<property name="technologies">
+		<list>
+			<ref bean="CCGT" />
+			<ref bean="OCGT" />
+			<ref bean="coalPulverizedSuperCritical" />
+			<ref bean="lignitePGT" />
+			<ref bean="biomassPGT" />
+			<ref bean="windPGT" />
+			<ref bean="windOffshorePGT" />
+			<ref bean="photovolticPGT" />
+			<ref bean="nuclearPGT" />
+		</list>
+	</property>
+	<property name="powerGridNodes" >
+		<list>
+			<ref bean="beneluxNode" />
+		</list>
+	</property>
+</bean>
+
 <!-- CO2 Tax -->
+<bean id = "co2TaxTrend" class = "emlab.gen.trend.StepTrend" p:start="${co2TaxStart}"
+	p:duration="${co2TaxDuration}" p:increment="${co2TaxIncrement}"
+	p:minValue="0" />
+	
 <!-- CO2 Cap -->
+<bean id="co2CapTrend" class="emlab.gen.trend.StepTrend" p:start="${co2CapStart}"
+	p:duration="${co2CapDuration}" p:increment="${co2CapIncrement}"
+	p:minValue="0" />
+		
 <!-- Minimum CO2 Price Trends -->
+<bean id="minCo2PriceTrend" class="emlab.gen.trend.StepTrend" p:start="${minCo2PriceStart}"
+	p:duration="${minCo2PriceDuration}" p:increment="${minCo2PriceIncrement}"
+	p:minValue="0" />
+		
+<bean id="minCo2PriceTrendNL" class="emlab.gen.trend.StepTrend" p:start="0"
+	p:duration="1" p:increment="0"
+	p:minValue="0" />
+	
 <!-- CO2 Market Stability Reserve -->
 <!-- Government -->
 <!-- Power Generation Technologies -->
