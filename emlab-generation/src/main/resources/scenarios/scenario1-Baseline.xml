@@ -969,9 +969,9 @@
 	</property>
 </bean>
 	
-<bean id="biomassInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biomass_Inv" />
-<bean id="biomassFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biomass_OM" />
-<bean id="biomassEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biomass_Eff" />
+<bean id="biomassInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biomass_Inv" />
+<bean id="biomassFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biomass_OM" />
+<bean id="biomassEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biomass_Eff" />
 	
 <bean id="biogasPGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
 	p:name="Biogas" p:capacity="150"
@@ -996,9 +996,9 @@
 	</property>
 </bean>
 
-<bean id="biogasInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biogas_Inv" />
-<bean id="biogasFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biogas_OM" />
-<bean id="biogasEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biogas_Eff" />
+<bean id="biogasInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biogas_Inv" />
+<bean id="biogasFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biogas_OM" />
+<bean id="biogasEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="Biogas_Eff" />
 	
 <bean id="windPGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
 	p:name="Wind" p:capacity="100" 
@@ -1018,9 +1018,9 @@
 	p:applicableForLongTermContract="true">
 </bean>
 	
-<bean id="windInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="Wind_Inv" />
-<bean id="windFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="Wind_OM" />
-<bean id="windEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="Wind_Eff" />
+<bean id="windInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="Wind_Inv" />
+<bean id="windFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="Wind_OM" />
+<bean id="windEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="Wind_Eff" />
 	
 	
 <bean id="windOffshorePGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
@@ -1041,9 +1041,9 @@
 	p:applicableForLongTermContract="true">
 </bean>
 	
-<bean id="windOffshoreInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="WindOffshore_Inv" />
-<bean id="windOffshoreFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="WindOffshore_OM" />
-<bean id="windOffshoreEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="WindOffshore_Eff" />
+<bean id="windOffshoreInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="WindOffshore_Inv" />
+<bean id="windOffshoreFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="WindOffshore_OM" />
+<bean id="windOffshoreEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="WindOffshore_Eff" />
 	
 <bean id="photovoltaicPGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
 	p:name="Photovoltaic" p:capacity="50" 
@@ -1064,9 +1064,9 @@
 </bean>
 	
 	
-<bean id="pvInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="PV_Inv" />
-<bean id="pvFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="PV_OM" />
-<bean id="pvEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurves.csv" p:startingYear="-50" p:delimiter="," p:variableName="PV_Eff" />
+<bean id="pvInvestmentCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="PV_Inv" />
+<bean id="pvFixedOperatingCostTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="PV_OM" />
+<bean id="pvEfficiencyTimeSeries" class="emlab.gen.trend.TimeSeriesCSVReader" p:filename="/data/learningCurvesNL.csv" p:startingYear="-50" p:delimiter="," p:variableName="PV_Eff" />
 	
 <bean id="nuclearPGT" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
 	p:name="Nuclear" p:capacity="500"
