@@ -46,7 +46,7 @@ import emlab.gen.util.Utils;
  */
 @RoleComponent
 public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends AbstractRole<DecarbonizationModel>
-        implements Role<DecarbonizationModel> {
+implements Role<DecarbonizationModel> {
 
     @Autowired
     private Reps reps;
@@ -286,21 +286,21 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
 
         logger.warn("Current tick is " + getCurrentTick());
 
-        if (getCurrentTick() == 0) {
-            for (PowerPlant pp : storagePowerPlantList) {
-                initialStorage[storagePowerPlantList.indexOf(pp)] = 0;
-            }
-        } else {
-            for (PowerPlant pp : storagePowerPlantList) {
-                initialStorage[storagePowerPlantList.indexOf(pp)] = pp.getActualStorageContentEndOfYear();
-            }
-        }
-
-        logger.warn("initial value Storage " + initialStorage[0]);
-
-        // Start optimization model
-
         if (!storagePowerPlantList.contains(null)) {
+
+            if (getCurrentTick() == 0) {
+                for (PowerPlant pp : storagePowerPlantList) {
+                    initialStorage[storagePowerPlantList.indexOf(pp)] = 0;
+                }
+            } else {
+                for (PowerPlant pp : storagePowerPlantList) {
+                    initialStorage[storagePowerPlantList.indexOf(pp)] = pp.getActualStorageContentEndOfYear();
+                }
+            }
+
+            logger.warn("initial value Storage " + initialStorage[0]);
+
+            // Start optimization model
 
             try {
                 // define new model
@@ -332,7 +332,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                         E[zoneList.indexOf(zone)][hour] = cplex.numVar(storagePowerPlantList
                                 .get(zoneList.indexOf(zone)).getTechnology().getMinStorageCapacity(),
                                 storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology()
-                                .getMaxStorageCapacity());
+                                        .getMaxStorageCapacity());
                     }
                 }
 
@@ -535,9 +535,9 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                                 maxStorageCapacity.assign(technology.getMaxStorageCapacity());
 
                                 m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
-                                        .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
+                                .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
                                 m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
-                                        .assign(maxStorageCapacity, Functions.div);
+                                .assign(maxStorageCapacity, Functions.div);
 
                             }
                         }
@@ -667,7 +667,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                     m.viewColumn(IPROD.get(zoneSmallerResidual)).set(row,
                             m.get(row, LOADINZONE.get(zoneSmallerResidual)));
                     m.viewColumn(IPROD.get(zoneBiggerResidual))
-                    .set(row, m.get(row, LOADINZONE.get(zoneBiggerResidual)));
+                            .set(row, m.get(row, LOADINZONE.get(zoneBiggerResidual)));
                 } else if ((smallerResidual < 0) && (biggerResidual > 0)) {
                     numberOfHoursWhereOneCountryExportsREStoTheOther++;
                     // In case the country with the smaller residual can export
@@ -688,7 +688,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                             m.set(row, INTERCONNECTOR, (m.get(row, INTERCONNECTOR) - smallerResidual));
                             m.viewColumn(RLOADINZONE.get(zoneSmallerResidual)).set(row, 0);
                             m.viewColumn(RLOADINZONE.get(zoneBiggerResidual))
-                            .set(row, biggerResidual + smallerResidual);
+                                    .set(row, biggerResidual + smallerResidual);
                         } else {
                             m.set(row, INTERCONNECTOR, 0);
                             m.viewColumn(RLOADINZONE.get(zoneSmallerResidual)).set(row, 0);
@@ -720,7 +720,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                 m.viewColumn(RLOADTOTAL).set(
                         row,
                         m.get(row, RLOADINZONE.get(zoneSmallerResidual))
-                        + m.get(row, RLOADINZONE.get(zoneBiggerResidual)));
+                                + m.get(row, RLOADINZONE.get(zoneBiggerResidual)));
             }
 
             // First divide it by new value. Spilled values are than greater

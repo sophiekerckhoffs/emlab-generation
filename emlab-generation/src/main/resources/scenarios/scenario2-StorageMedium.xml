@@ -595,6 +595,18 @@
 	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
 	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
 	p:investorMarket-ref="beneluxElectricitySpotMarket" />
+<bean id = "energyProducerStorage" class = "emlab.gen.domain.agent.EnergyProducer"
+	p:name="Energy Producer Storage" p:cash="${startCashStorage}"
+	p:investmentRole-ref="standardInvestmentRole"
+	p:longTermContractMargin="0.1" p:longTermContractPastTimeHorizon="3"
+	p:investmentFutureTimeHorizon="${investmentFutureTimeHorizon}" p:pastTimeHorizon="5"
+	p:equityInterestRate="0.12" p:loanInterestRate="0.09"
+	p:debtRatioOfInvestments="0.7"
+	p:dismantlingProlongingYearsAfterTechnicalLifetime="0"
+	p:dismantlingRequiredOperatingProfit="0" p:downpaymentFractionOfCash="0.5"
+	p:willingToInvest="true" p:priceMarkUp="${priceMarkUp}"
+	p:numberOfYearsBacklookingForForecasting="${numberOfYearBackLookingForForecasting}"
+	p:investorMarket-ref="beneluxElectricitySpotMarket" />
 	
 <bean id = "standardInvestmentRole" class = "emlab.gen.role.investment.InvestInPowerGenerationTechnologiesRole" />
 <bean id = "targetInvestmentRole" class = "emlab.gen.role.investment.TargetInvestmentRole" />	
@@ -689,6 +701,18 @@
 		</list>
 	</property>
 </bean>
+
+<!--  Storage Power plants -->
+		
+		<bean id="storageA" class="emlab.gen.domain.technology.PowerPlant" p:label="Storage Power Plant A"
+		p:constructionStartTime="-5" p:actualLeadtime="4" p:actualEfficiency="1"
+		p:actualPermittime="1" p:expectedEndOfLife="60" p:actualInvestedCapital="500000000"
+		p:dismantleTime="1000" p:actualNominalCapacity="6000"
+		p:name="Energy Producer A - Storage">
+			<property name="technology" ref="storage"/>
+			<property name="owner" ref="energyProducerStorage"/>
+			<property name="location" ref="beneluxNode"/>
+		</bean>	
 
 
 <!-- CO2 Tax -->
@@ -1088,6 +1112,32 @@
 <bean id="nuclearInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0" p:start="2874800" />
 <bean id="nuclearFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0" p:start="71870" />
 <bean id="nuclearEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0.00001" p:start=".33" />
+
+<bean id="storage" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
+	p:name="Storage" p:capacity="6000" 
+	p:investmentCostTimeSeries-ref="storageInvestmentCostTimeSeries"
+	p:fixedOperatingCostTimeSeries-ref="storageFixedOperatingCostTimeSeries"
+	p:efficiencyTimeSeries-ref="storageEfficiencyTimeSeries" 
+	p:co2CaptureEffciency="0" 
+	p:depreciationTime="25"
+	p:minimumRunningHours="0"
+	p:fixedOperatingCostModifierAfterLifetime=".05" p:expectedLifetime="45"
+	p:expectedLeadtime="1" p:expectedPermittime="1" p:minimumFuelQuality="1"
+	p:maximumInstalledCapacityFractionInCountry="1"
+	p:maximumInstalledCapacityFractionPerAgent="1"
+	p:applicableForLongTermContract="false"
+	p:intermittent="true"
+	p:storage="true"
+	p:chargeEfficiency="0.84"
+	p:maxStorageCapacity="20000"
+	p:minStorageCapacity="0"
+	p:chargingRate="6000"
+	p:disChargingRate="6000">
+</bean>
+
+<bean id="storageInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0" p:start="500000000" />
+<bean id="storageFixedOperatingCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0" p:start="82200000" />
+<bean id="storageEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0" p:start=".84" />
 
 <!-- Parameter file -->
 
