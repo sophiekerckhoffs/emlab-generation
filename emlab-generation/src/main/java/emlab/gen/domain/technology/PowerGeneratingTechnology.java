@@ -45,7 +45,6 @@ public class PowerGeneratingTechnology {
     @SimulationParameter(label = "CO2 capture efficiency", from = 0, to = 1)
     private double co2CaptureEffciency;
 
-
     @SimulationParameter(label = "Depreciation time (years)", from = 0, to = 40)
     private int depreciationTime;
 
@@ -80,6 +79,8 @@ public class PowerGeneratingTechnology {
     private boolean storage;
 
     private double chargeEfficiency;
+
+    private double disChargeEfficiency;
 
     private double chargingRate;
 
@@ -300,6 +301,14 @@ public class PowerGeneratingTechnology {
 
     public void setChargeEfficiency(double chargeEfficiency) {
         this.chargeEfficiency = chargeEfficiency;
+    }
+
+    public double getDisChargeEfficiency() {
+        return disChargeEfficiency;
+    }
+
+    public void setDisChargeEfficiency(double disChargeEfficiency) {
+        this.disChargeEfficiency = disChargeEfficiency;
     }
 
     public double getChargingRate() {

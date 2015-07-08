@@ -46,7 +46,7 @@ import emlab.gen.util.Utils;
  */
 @RoleComponent
 public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends AbstractRole<DecarbonizationModel>
-implements Role<DecarbonizationModel> {
+        implements Role<DecarbonizationModel> {
 
     @Autowired
     private Reps reps;
@@ -300,6 +300,18 @@ implements Role<DecarbonizationModel> {
 
             logger.warn("initial value Storage " + initialStorage[0]);
 
+            for (Zone zone : zoneList) {
+                for (int hour = 0; hour < 10; hour++) {
+                    logger.warn("Values P " + m.get(hour, RLOADINZONE.get(zone)));
+                    logger.warn("Values E "
+                            + storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology().getMaxStorageCapacity());
+                    logger.warn("Values sIn "
+                            + storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology().getChargingRate());
+                    logger.warn("Values sOut "
+                            + storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology().getDisChargingRate());
+                }
+            }
+
             // Start optimization model
 
             try {
@@ -332,7 +344,7 @@ implements Role<DecarbonizationModel> {
                         E[zoneList.indexOf(zone)][hour] = cplex.numVar(storagePowerPlantList
                                 .get(zoneList.indexOf(zone)).getTechnology().getMinStorageCapacity(),
                                 storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology()
-                                        .getMaxStorageCapacity());
+                                .getMaxStorageCapacity());
                     }
                 }
 
@@ -401,8 +413,8 @@ implements Role<DecarbonizationModel> {
                         storageContent[zones][hour].addTerm(1.0, E[zones][hour - 1]);
                         storageContent[zones][hour].addTerm(storagePowerPlantList.get(zones).getTechnology()
                                 .getChargeEfficiency(), sIn[zones][hour - 1]);
-                        storageContent[zones][hour].addTerm(-1
-                                / storagePowerPlantList.get(zones).getTechnology().getChargeEfficiency(),
+                        storageContent[zones][hour].addTerm(
+                                (storagePowerPlantList.get(zones).getTechnology().getDisChargeEfficiency()),
                                 sOut[zones][hour - 1]);
                     }
                 }
@@ -486,6 +498,19 @@ implements Role<DecarbonizationModel> {
                 // solve model
                 if (cplex.solve()) {
 
+                    for (int j = 0; j < zoneList.size(); j++) {
+                        for (int i = 8740; i < HOURS; i++) {
+                            logger.warn("Hour is: " + (i + 1));
+                            logger.warn("Storage in : " + j + cplex.getValue(sIn[j][i]));
+                            logger.warn("Storage out : " + j + cplex.getValue(sOut[j][i]));
+                            logger.warn("Storage : " + j + cplex.getValue(E[j][i]));
+                            logger.warn("I: " + cplex.getValue(I[i]));
+                            logger.warn("Market in : " + j + cplex.getValue(mIn[j][i]));
+                            logger.warn("Market out : " + j + cplex.getValue(mOut[j][i]));
+
+                        }
+                    }
+
                     double[] nettoChargeZoneA = new double[8760];
                     double[] nettoChargeZoneB = new double[8760];
 
@@ -520,6 +545,34 @@ implements Role<DecarbonizationModel> {
 
                     for (int hour = 0; hour < HOURS; hour++) {
                         interConnector[hour] = cplex.getValue(I[hour]);
+                    }
+
+                    double[] usedStorageCapacityA = new double[8760];
+                    double[] usedStorageCapacityB = new double[8760];
+
+                    for (int zones = 0; zones < zoneList.size(); zones++) {
+                        for (int hour = 0; hour < HOURS; hour++) {
+                            if (zones == 0) {
+                                usedStorageCapacityA[hour] = cplex.getValue(E[zones][hour]);
+                            }
+                            if (zones == 1) {
+                                usedStorageCapacityB[hour] = cplex.getValue(E[zones][hour]);
+                            }
+                        }
+                    }
+
+                    DoubleMatrix1D usedStorageCapacityAVector = new DenseDoubleMatrix1D(usedStorageCapacityA);
+                    DoubleMatrix1D usedStorageCapacityBVector = new DenseDoubleMatrix1D(usedStorageCapacityB);
+
+                    for (int zones = 0; zones < zoneList.size(); zones++) {
+                        if (zones == 0) {
+                            m.viewColumn(STORAGECAP.get(zoneList.get(zones))).assign(usedStorageCapacityAVector,
+                                    Functions.plus);
+                        }
+                        if (zones == 1) {
+                            m.viewColumn(STORAGECAP.get(zoneList.get(zones))).assign(usedStorageCapacityBVector,
+                                    Functions.plus);
+                        }
                     }
 
                     DoubleMatrix1D interConnectorVector = new DenseDoubleMatrix1D(interConnector);
@@ -570,15 +623,16 @@ implements Role<DecarbonizationModel> {
 
                     m.viewColumn(RLOADINZONERES.get(zone)).assign(m.viewColumn(RLOADINZONE.get(zone)));
 
-                    m.viewColumn(RLOADINZONE.get(zone)).assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
+                    m.viewColumn(RLOADINZONE.get(zone)).assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.minus);
 
                 }
                 m.viewColumn(RLOADTOTALRES).assign(m.viewColumn(RLOADTOTAL), Functions.plus);
-                m.viewColumn(RLOADTOTAL).assign(m.viewColumn(RLOADINZONE.get(zone)), Functions.plus);
+                m.viewColumn(RLOADTOTAL).assign(m.viewColumn(RLOADINZONE.get(zone)));
             }
         }
 
         logger.warn("First 10 values of matrix: \n" + m.viewPart(0, 0, 10, m.columns()).toString());
+        logger.warn("Last 10 values of matrix: \n" + m.viewPart(8740, 0, 19, m.columns()).toString());
 
         // 5. Reduce the load factors by obvious
         // spill, that is RES production & storage greater than demand +
@@ -600,7 +654,7 @@ implements Role<DecarbonizationModel> {
             DoubleMatrix1D spillVector = loadPlusInterconnector.copy();
             spillVector.assign(m.viewColumn(IPROD.get(zone)), Functions.div);
             spillVector.assign(oneVector, Functions.min);
-            m.viewColumn(IPROD.get(zone)).assign(loadPlusInterconnector, Functions.min);
+            m.viewColumn(IPROD.get(zone)).assign(loadPlusInterconnector, Functions.minus);
 
             for (PowerGridNode node : zoneToNodeList.get(zone)) {
 
@@ -667,7 +721,7 @@ implements Role<DecarbonizationModel> {
                     m.viewColumn(IPROD.get(zoneSmallerResidual)).set(row,
                             m.get(row, LOADINZONE.get(zoneSmallerResidual)));
                     m.viewColumn(IPROD.get(zoneBiggerResidual))
-                            .set(row, m.get(row, LOADINZONE.get(zoneBiggerResidual)));
+                    .set(row, m.get(row, LOADINZONE.get(zoneBiggerResidual)));
                 } else if ((smallerResidual < 0) && (biggerResidual > 0)) {
                     numberOfHoursWhereOneCountryExportsREStoTheOther++;
                     // In case the country with the smaller residual can export
@@ -688,7 +742,7 @@ implements Role<DecarbonizationModel> {
                             m.set(row, INTERCONNECTOR, (m.get(row, INTERCONNECTOR) - smallerResidual));
                             m.viewColumn(RLOADINZONE.get(zoneSmallerResidual)).set(row, 0);
                             m.viewColumn(RLOADINZONE.get(zoneBiggerResidual))
-                                    .set(row, biggerResidual + smallerResidual);
+                            .set(row, biggerResidual + smallerResidual);
                         } else {
                             m.set(row, INTERCONNECTOR, 0);
                             m.viewColumn(RLOADINZONE.get(zoneSmallerResidual)).set(row, 0);
@@ -720,7 +774,7 @@ implements Role<DecarbonizationModel> {
                 m.viewColumn(RLOADTOTAL).set(
                         row,
                         m.get(row, RLOADINZONE.get(zoneSmallerResidual))
-                                + m.get(row, RLOADINZONE.get(zoneBiggerResidual)));
+                        + m.get(row, RLOADINZONE.get(zoneBiggerResidual)));
             }
 
             // First divide it by new value. Spilled values are than greater
