@@ -111,8 +111,13 @@ saveQueriesToDataFrameList <- function(tick, listOfDataFrames, queries){
   df<-data.frame(tick)
   colnames(df)<-"tick"
   for (i in seq(1,length(queries[[1]]))){
+<<<<<<< HEAD
     message(paste("Query", i, " ", queries[i,1]))
     #flush.console()
+=======
+    print(paste("Query", i))
+    flush.console()
+>>>>>>> 16ded9284d5fb4092657b5fd2201a76b372448cb
     if(grepl("^(?!TABLE).*$", queries[i,1], perl = TRUE)){
       tmpDF <- queryNumberToDataFrame(i, queries)
       if(!is.null(tmpDF))

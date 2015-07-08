@@ -37,11 +37,13 @@ import emlab.gen.role.capacitymechanisms.ProcessAcceptedPowerPlantDispatchRolein
 import emlab.gen.role.capacitymechanisms.StrategicReserveOperatorRole;
 import emlab.gen.role.co2policy.MarketStabilityReserveRole;
 import emlab.gen.role.co2policy.RenewableAdaptiveCO2CapRole;
+import emlab.gen.role.investment.DismantlePowerPlantOperationalLossRole;
 import emlab.gen.role.investment.DismantlePowerPlantPastTechnicalLifetimeRole;
 import emlab.gen.role.investment.GenericInvestmentRole;
 import emlab.gen.role.market.ClearCommodityMarketRole;
 import emlab.gen.role.market.ClearIterativeCO2AndElectricitySpotMarketTwoCountryRole;
 import emlab.gen.role.market.CreatingFinancialReports;
+import emlab.gen.role.market.DetermineResidualLoadCurvesForTwoCountriesRole;
 import emlab.gen.role.market.DetermineResidualLoadCurvesForTwoCountriesWithStorageRole;
 import emlab.gen.role.market.ProcessAcceptedBidsRole;
 import emlab.gen.role.market.ProcessAcceptedPowerPlantDispatchRole;
@@ -108,6 +110,8 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
     @Autowired
     private ProcessAcceptedPowerPlantDispatchRoleinSR acceptedPowerPlantDispatchRoleinSR;
     @Autowired
+    private DismantlePowerPlantOperationalLossRole dismantlePowerPlantOperationalLossRole;
+    @Autowired
     private RenewableAdaptiveCO2CapRole renewableAdaptiveCO2CapRole;
     @Autowired
     MarketStabilityReserveRole marketStabilityReserveRole;
@@ -115,6 +119,11 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
     private DetermineResidualLoadCurvesForTwoCountriesWithStorageRole determineResidualLoadCurve;
     @Autowired
     private CreatingFinancialReports creatingFinancialReports;
+    private DetermineResidualLoadCurvesForTwoCountriesRole determineResidualLoadCurve;
+    @Autowired
+    private SimpleCapacityMarketMainRole simpleCapacityMarketMainRole;
+    @Autowired
+    private ExportLimiterRole exportLimiterRole;
 
     @Autowired
     Reps reps;
@@ -159,7 +168,28 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
          */
         Timer timerMarket = new Timer();
         timerMarket.start();
+
+        logger.warn("  0b. Dismantling");
+        timerMarket.reset();
+        timerMarket.start();
+        for (ElectricitySpotMarket market : reps.marketRepository.findAllElectricitySpotMarketsAsList()) {
+            dismantlePowerPlantOperationalLossRole.act(market);
+        }
+        timerMarket.stop();
+        logger.warn("        took: {} seconds.", timerMarket.seconds());
+
+        logger.warn("  0c. Paying loans");
+        timerMarket.reset();
+        timerMarket.start();
+        for (EnergyProducer producer : reps.genericRepository.findAllAtRandom(EnergyProducer.class)) {
+            payForLoansRole.act(producer);
+        }
+        timerMarket.stop();
+        logger.warn("        took: {} seconds.", timerMarket.seconds());
+
         logger.warn("  1. Determining fuel mix");
+        timerMarket.reset();
+        timerMarket.start();
         for (EnergyProducer producer : reps.genericRepository.findAllAtRandom(EnergyProducer.class)) {
             determineFuelMixRole.act(producer);
             // producer.act(determineFuelMixRole);
@@ -168,13 +198,33 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
         logger.warn("        took: {} seconds.", timerMarket.seconds());
 
         /*
+         * Run Simple Capacity Market (start from tick 1, due to initialization
+         * requirements- it needs values (revenues from electricity sport
+         * market) from previous tick
+         */
+
+        if ((getCurrentTick() > 0) && (model.isSimpleCapacityMarketEnabled())) {
+            timerMarket.reset();
+            timerMarket.start();
+            logger.warn(" 2a. Run Simple Capacity Market");
+            for (CapacityMarket market : reps.capacityMarketRepository.findAll()) {
+                simpleCapacityMarketMainRole.act(market);
+            }
+
+            // exportLimiterRole.act(model);
+
+            timerMarket.stop();
+            logger.warn("        took: {} seconds.", timerMarket.seconds());
+        }
+
+        /*
          * Submit and select long-term electricity contracts
          */
 
         if (model.isLongTermContractsImplemented()) {
             timerMarket.reset();
             timerMarket.start();
-            logger.warn("  2. Submit and select long-term electricity contracts");
+            logger.warn("  2b. Submit and select long-term electricity contracts");
             for (EnergyProducer producer : reps.genericRepository.findAllAtRandom(EnergyProducer.class)) {
                 submitLongTermElectricityContractsRole.act(producer);
                 // producer.act(submitLongTermElectricityContractsRole);
@@ -188,8 +238,21 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
             logger.warn("        took: {} seconds.", timerMarket.seconds());
         }
 
+        // timerMarket.reset();
+        // timerMarket.start();
+        // logger.warn("  2c. Creating market forecast");
+        //
+        // clearIterativeCO2AndElectricitySpotMarketTwoCountryRole
+        // .makeCentralElectricityMarketForecastForTimeStep(getCurrentTick() +
+        // model.getCentralForecastingYear());
+        //
+        // logger.warn("        took: {} seconds.", timerMarket.seconds());
+        //
+        // timerMarket.reset();
+
         /*
-         * Clear electricity spot and CO2 markets and determine also the commitment of powerplants.
+         * Clear electricity spot and CO2 markets and determine also the
+         * commitment of powerplants.
          */
         timerMarket.reset();
         timerMarket.start();

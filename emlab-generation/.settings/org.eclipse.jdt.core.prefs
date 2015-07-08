@@ -11,8 +11,11 @@ org.eclipse.jdt.core.codeComplete.staticFinalFieldPrefixes=
 org.eclipse.jdt.core.codeComplete.staticFinalFieldSuffixes=
 org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.6
 org.eclipse.jdt.core.compiler.compliance=1.6
+<<<<<<< HEAD
 org.eclipse.jdt.core.compiler.problem.assertIdentifier=ignore
 org.eclipse.jdt.core.compiler.problem.enumIdentifier=ignore
+=======
+>>>>>>> 16ded9284d5fb4092657b5fd2201a76b372448cb
 org.eclipse.jdt.core.compiler.problem.forbiddenReference=warning
 org.eclipse.jdt.core.compiler.source=1.6
 org.eclipse.jdt.core.formatter.align_type_members_on_columns=false

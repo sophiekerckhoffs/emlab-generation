@@ -53,6 +53,8 @@ public class PowerGeneratingTechnology {
 
     private double fixedOperatingCostModifierAfterLifetime;
 
+    private double variableOperatingCostinEURPerMWh;
+
     @SimulationParameter(label = "Expected lifetime", from = 0, to = 40)
     private int expectedLifetime;
 
@@ -89,6 +91,16 @@ public class PowerGeneratingTechnology {
     private double maxStorageCapacity;
 
     private double minStorageCapacity;
+
+    private double maximumLifeExtension;
+
+    public double getMaximumLifeExtension() {
+        return maximumLifeExtension;
+    }
+
+    public void setMaximumLifeExtension(double maximumLifeExtension) {
+        this.maximumLifeExtension = maximumLifeExtension;
+    }
 
     public double getBaseSegmentDependentAvailability() {
         return baseSegmentDependentAvailability;
@@ -136,6 +148,14 @@ public class PowerGeneratingTechnology {
 
     public void setMinimumRunningHours(double minimumRunningHours) {
         this.minimumRunningHours = minimumRunningHours;
+    }
+
+    public double getVariableOperatingCostinEURPerMWh() {
+        return variableOperatingCostinEURPerMWh;
+    }
+
+    public void setVariableOperatingCostinEURPerMWh(double variableOperatingCostinEURPerMWh) {
+        this.variableOperatingCostinEURPerMWh = variableOperatingCostinEURPerMWh;
     }
 
     @RelatedTo(type = "FUEL", elementClass = Substance.class, direction = Direction.OUTGOING)

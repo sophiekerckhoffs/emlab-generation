@@ -227,7 +227,6 @@ public class Government extends DecarbonizationAgent implements Agent {
         this.adaptiveCapAdjustmentBasedOnCapNotActualEmissions = adaptiveCapAdjustmentBasedOnCapNotActualEmissions;
     }
 
-
     public boolean isAdaptiveCapAdjustmentRelativeToNonSubsidisedProduction() {
         return adaptiveCapAdjustmentRelativeToNonSubsidisedProduction;
     }
