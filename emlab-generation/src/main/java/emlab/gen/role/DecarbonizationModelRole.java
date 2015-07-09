@@ -31,8 +31,11 @@ import emlab.gen.domain.agent.Government;
 import emlab.gen.domain.agent.StrategicReserveOperator;
 import emlab.gen.domain.agent.TargetInvestor;
 import emlab.gen.domain.market.CommodityMarket;
+import emlab.gen.domain.market.capacity.CapacityMarket;
 import emlab.gen.domain.market.electricity.ElectricitySpotMarket;
 import emlab.gen.repository.Reps;
+import emlab.gen.role.capacitymarket.ExportLimiterRole;
+import emlab.gen.role.capacitymarket.SimpleCapacityMarketMainRole;
 import emlab.gen.role.capacitymechanisms.ProcessAcceptedPowerPlantDispatchRoleinSR;
 import emlab.gen.role.capacitymechanisms.StrategicReserveOperatorRole;
 import emlab.gen.role.co2policy.MarketStabilityReserveRole;
@@ -43,7 +46,6 @@ import emlab.gen.role.investment.GenericInvestmentRole;
 import emlab.gen.role.market.ClearCommodityMarketRole;
 import emlab.gen.role.market.ClearIterativeCO2AndElectricitySpotMarketTwoCountryRole;
 import emlab.gen.role.market.CreatingFinancialReports;
-import emlab.gen.role.market.DetermineResidualLoadCurvesForTwoCountriesRole;
 import emlab.gen.role.market.DetermineResidualLoadCurvesForTwoCountriesWithStorageRole;
 import emlab.gen.role.market.ProcessAcceptedBidsRole;
 import emlab.gen.role.market.ProcessAcceptedPowerPlantDispatchRole;
@@ -119,7 +121,6 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
     private DetermineResidualLoadCurvesForTwoCountriesWithStorageRole determineResidualLoadCurve;
     @Autowired
     private CreatingFinancialReports creatingFinancialReports;
-    private DetermineResidualLoadCurvesForTwoCountriesRole determineResidualLoadCurve;
     @Autowired
     private SimpleCapacityMarketMainRole simpleCapacityMarketMainRole;
     @Autowired
