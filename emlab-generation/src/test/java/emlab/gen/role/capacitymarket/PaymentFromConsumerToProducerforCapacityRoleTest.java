@@ -69,6 +69,7 @@ public class PaymentFromConsumerToProducerforCapacityRoleTest {
         consumer.persist();
 
         CapacityMarket market = new CapacityMarket();
+        market.setName("CM");
         market.setConsumer(consumer);
         market.setZone(zone);
         market.persist();
@@ -78,7 +79,6 @@ public class PaymentFromConsumerToProducerforCapacityRoleTest {
         esm.persist();
 
         CapacityClearingPoint clearingPoint = new CapacityClearingPoint();
-        clearingPoint.setCapacityMarket(market);
         clearingPoint.setPrice(1);
         clearingPoint.setTime(0l);
         clearingPoint.persist();

@@ -143,7 +143,8 @@ public class InvestInPowerGenerationTechnologiesRole<T extends EnergyProducer> e
         double highestValue = Double.MIN_VALUE;
         PowerGeneratingTechnology bestTechnology = null;
 
-        for (PowerGeneratingTechnology technology : reps.genericRepository.findAll(PowerGeneratingTechnology.class)) {
+        for (PowerGeneratingTechnology technology : reps.powerGeneratingTechnologyRepository
+                .findAllExceptStoragePowerGeneratingTechnologies()) {
 
             PowerPlant plant = new PowerPlant();
             plant.specifyNotPersist(getCurrentTick(), agent, getNodeForZone(market.getZone()), technology);
@@ -270,9 +271,17 @@ public class InvestInPowerGenerationTechnologiesRole<T extends EnergyProducer> e
                         for (time = getCurrentTick(); time > getCurrentTick()
                                 - agent.getNumberOfYearsBacklookingForForecasting()
                                 && time > 0; time = time - 1) {
-                            double capacityRevenueTemp = reps.capacityMarketRepository
-                                    .findOneClearingPointForTimeAndCapacityMarket(time, cMarket).getPrice();
-                            sumCapacityRevenue += capacityRevenueTemp;
+                            ClearingPoint ClearingPointTemp = reps.capacityMarketRepository
+                                    .findOneClearingPointForTimeAndCapacityMarket(time, cMarket);
+                            if (ClearingPointTemp != null) {
+                                double capacityRevenueTemp = reps.capacityMarketRepository
+                                        .findOneClearingPointForTimeAndCapacityMarket(time, cMarket).getPrice();
+                                sumCapacityRevenue += capacityRevenueTemp;
+                            } else {
+                                double capacityRevenueTemp = 0;
+                                sumCapacityRevenue += capacityRevenueTemp;
+                            }
+
                         }
                         // logger.warn(" And capacity (peak segment) is"
                         // + plant.getExpectedAvailableCapacity(futureTimePoint,
