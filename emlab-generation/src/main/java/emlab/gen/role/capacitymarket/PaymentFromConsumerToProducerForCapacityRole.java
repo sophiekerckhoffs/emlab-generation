@@ -63,9 +63,11 @@ public class PaymentFromConsumerToProducerForCapacityRole extends AbstractMarket
                     .findElectricitySpotMarketForZone(capacityMarket.getZone());
             // logger.warn("esmt " + esm.getName());
 
-            reps.nonTransactionalCreateRepository.createCashFlow(esm, plan.getBidder(), plan.getAcceptedAmount()
-                    * capacityClearingPoint.getPrice(), CashFlow.SIMPLE_CAPACITY_MARKET, getCurrentTick(),
-                    plan.getPlant());
+            if (capacityClearingPoint != null) {
+                reps.nonTransactionalCreateRepository.createCashFlow(esm, plan.getBidder(), plan.getAcceptedAmount()
+                        * capacityClearingPoint.getPrice(), CashFlow.SIMPLE_CAPACITY_MARKET, getCurrentTick(),
+                        plan.getPlant());
+            }
             // logger.warn("Cash flow from consumer {} to Producer {} of value {} "
             // + plan.getAcceptedAmount()
             // * capacityClearingPoint.getPrice(), plan.getBidder(),

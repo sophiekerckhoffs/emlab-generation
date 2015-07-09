@@ -79,13 +79,15 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
         List<Zone> zoneList = Utils.asList(reps.template.findAll(Zone.class));
         List<PowerGeneratingTechnology> intermittentTechnologyList = Utils
                 .asList(reps.powerGeneratingTechnologyRepository.findAllIntermittentPowerGeneratingTechnologies());
-        logger.warn("intermittent Technology List" + intermittentTechnologyList.toString());
+        // logger.warn("intermittent Technology List" +
+        // intermittentTechnologyList.toString());
         List<PowerGeneratingTechnology> storageTechnologyList = Utils.asList(reps.powerGeneratingTechnologyRepository
                 .findAllStoragePowerGeneratingTechnologies());
-        logger.warn("Storage Technology List:" + storageTechnologyList.toString());
+        // logger.warn("Storage Technology List:" +
+        // storageTechnologyList.toString());
         List<PowerGeneratingTechnology> technologyList = Utils.asList(reps.powerGeneratingTechnologyRepository
                 .findAllStorageAndIntermittentPowerGeneratingTechnologies());
-        logger.warn("Technology List:" + technologyList.toString());
+        // logger.warn("Technology List:" + technologyList.toString());
 
         Map<Zone, List<PowerGridNode>> zoneToNodeList = new HashMap<Zone, List<PowerGridNode>>();
         for (Zone zone : zoneList) {
@@ -206,7 +208,6 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
             }
 
         }
-        logger.warn("First 10 values of matrix: \n " + m.viewPart(0, 0, 10, m.columns()).toString());
 
         // 3. For each power grid node multiply the time series of each
         // intermittent technology type with
@@ -238,7 +239,6 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                             intermittentResourceProfile.getHourlyArray(getCurrentTick()));
                     m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology)).assign(
                             hourlyProductionPerNode, Functions.plus);
-                    logger.warn("First 10 values of matrix: \n " + m.viewPart(0, 0, 10, m.columns()).toString());
                     hourlyProductionPerNode.assign(Functions.mult(intermittentCapacityOfTechnologyInNode));
                     m.viewColumn(IPROD.get(zone)).assign(hourlyProductionPerNode, Functions.plus);
                     // Add to zonal-technological RES column
@@ -252,8 +252,6 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
 
             m.viewColumn(RLOADTOTAL).assign(m.viewColumn(RLOADINZONE.get(zone)), Functions.plus);
         }
-
-        logger.warn("First 10 values of matrix: \n " + m.viewPart(0, 0, 10, m.columns()).toString());
         // 4. Optimize residual load curve for storage and assign new values
         // residual load to matrix
 
@@ -272,20 +270,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
             }
         }
 
-        logger.warn(storagePowerPlantList.toString());
-        boolean empty = storagePowerPlantList.contains(null);
-        String emptyString;
-        if (empty) {
-            emptyString = "true";
-        } else {
-            emptyString = "fasle";
-        }
-        logger.warn(emptyString);
-
         double[] initialStorage = new double[storagePowerPlantList.size()];
-
-        logger.warn("Current tick is " + getCurrentTick());
-
         if (!storagePowerPlantList.contains(null)) {
 
             if (getCurrentTick() == 0) {
@@ -295,20 +280,6 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
             } else {
                 for (PowerPlant pp : storagePowerPlantList) {
                     initialStorage[storagePowerPlantList.indexOf(pp)] = pp.getActualStorageContentEndOfYear();
-                }
-            }
-
-            logger.warn("initial value Storage " + initialStorage[0]);
-
-            for (Zone zone : zoneList) {
-                for (int hour = 0; hour < 10; hour++) {
-                    logger.warn("Values P " + m.get(hour, RLOADINZONE.get(zone)));
-                    logger.warn("Values E "
-                            + storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology().getMaxStorageCapacity());
-                    logger.warn("Values sIn "
-                            + storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology().getChargingRate());
-                    logger.warn("Values sOut "
-                            + storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology().getDisChargingRate());
                 }
             }
 
@@ -344,7 +315,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                         E[zoneList.indexOf(zone)][hour] = cplex.numVar(storagePowerPlantList
                                 .get(zoneList.indexOf(zone)).getTechnology().getMinStorageCapacity(),
                                 storagePowerPlantList.get(zoneList.indexOf(zone)).getTechnology()
-                                .getMaxStorageCapacity());
+                                        .getMaxStorageCapacity());
                     }
                 }
 
@@ -498,45 +469,42 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                 // solve model
                 if (cplex.solve()) {
 
-                    for (int j = 0; j < zoneList.size(); j++) {
-                        for (int i = 8740; i < HOURS; i++) {
-                            logger.warn("Hour is: " + (i + 1));
-                            logger.warn("Storage in : " + j + cplex.getValue(sIn[j][i]));
-                            logger.warn("Storage out : " + j + cplex.getValue(sOut[j][i]));
-                            logger.warn("Storage : " + j + cplex.getValue(E[j][i]));
-                            logger.warn("I: " + cplex.getValue(I[i]));
-                            logger.warn("Market in : " + j + cplex.getValue(mIn[j][i]));
-                            logger.warn("Market out : " + j + cplex.getValue(mOut[j][i]));
-
-                        }
-                    }
-
                     double[] nettoChargeZoneA = new double[8760];
                     double[] nettoChargeZoneB = new double[8760];
+                    double[] usedStorageCapacityA = new double[8760];
+                    double[] usedStorageCapacityB = new double[8760];
 
                     for (int zones = 0; zones < zoneList.size(); zones++) {
                         for (int hour = 0; hour < HOURS; hour++) {
                             if (zones == 0) {
                                 nettoChargeZoneA[hour] = cplex.getValue(sIn[zones][hour])
                                         - cplex.getValue(sOut[zones][hour]);
+                                usedStorageCapacityA[hour] = cplex.getValue(E[zones][hour]);
                             }
                             if (zones == 1) {
                                 nettoChargeZoneB[hour] = cplex.getValue(sIn[zones][hour])
                                         - cplex.getValue(sOut[zones][hour]);
+                                usedStorageCapacityB[hour] = cplex.getValue(E[zones][hour]);
                             }
                         }
                     }
 
                     DoubleMatrix1D nettoChargeZoneAVector = new DenseDoubleMatrix1D(nettoChargeZoneA);
                     DoubleMatrix1D nettoChargeZoneBVector = new DenseDoubleMatrix1D(nettoChargeZoneB);
+                    DoubleMatrix1D usedStorageCapacityAVector = new DenseDoubleMatrix1D(usedStorageCapacityA);
+                    DoubleMatrix1D usedStorageCapacityBVector = new DenseDoubleMatrix1D(usedStorageCapacityB);
 
                     for (int zones = 0; zones < zoneList.size(); zones++) {
                         if (zones == 0) {
                             m.viewColumn(NETTOCHARGE.get(zoneList.get(zones))).assign(nettoChargeZoneAVector,
                                     Functions.plus);
+                            m.viewColumn(STORAGECAP.get(zoneList.get(zones))).assign(usedStorageCapacityAVector,
+                                    Functions.plus);
                         }
                         if (zones == 1) {
                             m.viewColumn(NETTOCHARGE.get(zoneList.get(zones))).assign(nettoChargeZoneBVector,
+                                    Functions.plus);
+                            m.viewColumn(STORAGECAP.get(zoneList.get(zones))).assign(usedStorageCapacityBVector,
                                     Functions.plus);
                         }
                     }
@@ -545,34 +513,6 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
 
                     for (int hour = 0; hour < HOURS; hour++) {
                         interConnector[hour] = cplex.getValue(I[hour]);
-                    }
-
-                    double[] usedStorageCapacityA = new double[8760];
-                    double[] usedStorageCapacityB = new double[8760];
-
-                    for (int zones = 0; zones < zoneList.size(); zones++) {
-                        for (int hour = 0; hour < HOURS; hour++) {
-                            if (zones == 0) {
-                                usedStorageCapacityA[hour] = cplex.getValue(E[zones][hour]);
-                            }
-                            if (zones == 1) {
-                                usedStorageCapacityB[hour] = cplex.getValue(E[zones][hour]);
-                            }
-                        }
-                    }
-
-                    DoubleMatrix1D usedStorageCapacityAVector = new DenseDoubleMatrix1D(usedStorageCapacityA);
-                    DoubleMatrix1D usedStorageCapacityBVector = new DenseDoubleMatrix1D(usedStorageCapacityB);
-
-                    for (int zones = 0; zones < zoneList.size(); zones++) {
-                        if (zones == 0) {
-                            m.viewColumn(STORAGECAP.get(zoneList.get(zones))).assign(usedStorageCapacityAVector,
-                                    Functions.plus);
-                        }
-                        if (zones == 1) {
-                            m.viewColumn(STORAGECAP.get(zoneList.get(zones))).assign(usedStorageCapacityBVector,
-                                    Functions.plus);
-                        }
                     }
 
                     DoubleMatrix1D interConnectorVector = new DenseDoubleMatrix1D(interConnector);
@@ -588,9 +528,9 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                                 maxStorageCapacity.assign(technology.getMaxStorageCapacity());
 
                                 m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
-                                .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
+                                        .assign(m.viewColumn(NETTOCHARGE.get(zone)), Functions.plus);
                                 m.viewColumn(TECHNOLOGYLOADFACTORSFORZONEANDNODE.get(zone).get(node).get(technology))
-                                .assign(maxStorageCapacity, Functions.div);
+                                        .assign(maxStorageCapacity, Functions.div);
 
                             }
                         }
@@ -598,12 +538,8 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
 
                     for (PowerPlant pp : storagePowerPlantList) {
                         pp.setActualStorageContentEndOfYear(cplex.getValue(E[storagePowerPlantList.indexOf(pp)][8759]));
-                        logger.warn("E value storage ending "
-                                + cplex.getValue(E[storagePowerPlantList.indexOf(pp)][8759]));
-                        logger.warn("End value storage ending is " + pp.getActualStorageContentEndOfYear());
-                    }
 
-                    logger.warn("First 10 values of matrix: \n" + m.viewPart(0, 0, 10, m.columns()).toString());
+                    }
 
                 } else {
                     logger.warn("Model did not solve");
@@ -632,7 +568,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
         }
 
         logger.warn("First 10 values of matrix: \n" + m.viewPart(0, 0, 10, m.columns()).toString());
-        logger.warn("Last 10 values of matrix: \n" + m.viewPart(8740, 0, 19, m.columns()).toString());
+        logger.warn("Last 10 values of matrix: \n" + m.viewPart(8750, 0, 10, m.columns()).toString());
 
         // 5. Reduce the load factors by obvious
         // spill, that is RES production & storage greater than demand +
@@ -666,7 +602,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
 
         }
 
-        // 4. Do a pre-market clearing of RES production: For each time step
+        // 6. Do a pre-market clearing of RES production: For each time step
         // check if there's negative residual loads
         // in each country. Export from one country to another country if
         // interconnector constraints and residual
@@ -721,7 +657,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                     m.viewColumn(IPROD.get(zoneSmallerResidual)).set(row,
                             m.get(row, LOADINZONE.get(zoneSmallerResidual)));
                     m.viewColumn(IPROD.get(zoneBiggerResidual))
-                    .set(row, m.get(row, LOADINZONE.get(zoneBiggerResidual)));
+                            .set(row, m.get(row, LOADINZONE.get(zoneBiggerResidual)));
                 } else if ((smallerResidual < 0) && (biggerResidual > 0)) {
                     numberOfHoursWhereOneCountryExportsREStoTheOther++;
                     // In case the country with the smaller residual can export
@@ -742,7 +678,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                             m.set(row, INTERCONNECTOR, (m.get(row, INTERCONNECTOR) - smallerResidual));
                             m.viewColumn(RLOADINZONE.get(zoneSmallerResidual)).set(row, 0);
                             m.viewColumn(RLOADINZONE.get(zoneBiggerResidual))
-                            .set(row, biggerResidual + smallerResidual);
+                                    .set(row, biggerResidual + smallerResidual);
                         } else {
                             m.set(row, INTERCONNECTOR, 0);
                             m.viewColumn(RLOADINZONE.get(zoneSmallerResidual)).set(row, 0);
@@ -774,7 +710,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
                 m.viewColumn(RLOADTOTAL).set(
                         row,
                         m.get(row, RLOADINZONE.get(zoneSmallerResidual))
-                        + m.get(row, RLOADINZONE.get(zoneBiggerResidual)));
+                                + m.get(row, RLOADINZONE.get(zoneBiggerResidual)));
             }
 
             // First divide it by new value. Spilled values are than greater
@@ -814,7 +750,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
         // logger.warn("Number of hours where one country exports to the other: "
         // + numberOfHoursWhereOneCountryExportsREStoTheOther);
 
-        // 5. Order the hours in the global residual load curve. Peak load
+        // 7. Order the hours in the global residual load curve. Peak load
         // first, base load last.
 
         // Sorts matrix by the load curve in descending order
@@ -852,7 +788,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
             upperBoundSplit[noSegments - 1] = 0;
         }
 
-        // 7. Create DynamicBins as representation for segments and for later
+        // 8. Create DynamicBins as representation for segments and for later
         // calculation of means, no etc. Per bin one sort of information (e.g.
         // residual
         // load, interconnector capacity) and the corresponding hour of the yea
@@ -1067,7 +1003,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
             // logger.warn(segmentLength);
         }
 
-        // 8. Store the load factors in the IntermittentTechnologyLoadFactors
+        // 9. Store the load factors in the IntermittentTechnologyLoadFactors
 
         String loadFactors;
         for (Zone zone : zoneList) {
@@ -1106,7 +1042,7 @@ public class DetermineResidualLoadCurvesForTwoCountriesWithStorageRole extends A
             }
         }
 
-        // 9. Store the segment duration and the average load in that segment
+        // 10. Store the segment duration and the average load in that segment
         // per country.
 
         Iterable<SegmentLoad> segmentLoads = reps.segmentLoadRepository.findAll();
