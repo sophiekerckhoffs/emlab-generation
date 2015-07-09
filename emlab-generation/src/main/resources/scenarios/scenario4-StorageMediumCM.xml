@@ -1133,7 +1133,7 @@
 <bean id="nuclearEfficiencyTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0.00001" p:start=".33" />
 
 <bean id="storage" class="emlab.gen.domain.technology.PowerGeneratingTechnology"
-	p:name="Storage" p:capacity="6000" 
+	p:name="Storage" p:capacity="3000" 
 	p:investmentCostTimeSeries-ref="storageInvestmentCostTimeSeries"
 	p:fixedOperatingCostTimeSeries-ref="storageFixedOperatingCostTimeSeries"
 	p:efficiencyTimeSeries-ref="storageEfficiencyTimeSeries" 
@@ -1153,8 +1153,8 @@
 	p:disChargeEfficiency="-1"
 	p:maxStorageCapacity="20000"
 	p:minStorageCapacity="0"
-	p:chargingRate="6000"
-	p:disChargingRate="6000">
+	p:chargingRate="3000"
+	p:disChargingRate="3000">
 </bean>
 
 <bean id="storageInvestmentCostTimeSeries" class="emlab.gen.trend.GeometricTrend" p:growthRate="0" p:start="500000000" />
@@ -1165,7 +1165,7 @@
 
 <bean id="projectPropertyConfigurer"
 	class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-	<property name="location" value="classpath:scenarios/parameters1-Baseline.properties" />
+	<property name="location" value="classpath:scenarios/parameters4-StorageCM" />
 </bean>
 
 </beans>
