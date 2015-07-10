@@ -465,9 +465,9 @@
 	p:baseLoad="${segment41nl}">
 	<property name="segment" ref="segment41" />
 </bean>
-<bean id = "segment44nl" class = "emlab.gen.domain.market.electricity.SegmentLoad"
-	p:baseLoad="${segment44nl}">
-	<property name="segment" ref="segment44" />
+<bean id = "segment42nl" class = "emlab.gen.domain.market.electricity.SegmentLoad"
+	p:baseLoad="${segment42nl}">
+	<property name="segment" ref="segment42" />
 </bean>
 <bean id = "segment43nl" class = "emlab.gen.domain.market.electricity.SegmentLoad"
 	p:baseLoad="${segment43nl}">
@@ -509,9 +509,9 @@
 	p:baseLoad="${segment52nl}">
 	<property name="segment" ref="segment52" />
 </bean>
-<bean id = "segment52nl" class = "emlab.gen.domain.market.electricity.SegmentLoad"
-	p:baseLoad="${segment52nl}">
-	<property name="segment" ref="segment52" />
+<bean id = "segment53nl" class = "emlab.gen.domain.market.electricity.SegmentLoad"
+	p:baseLoad="${segment53nl}">
+	<property name="segment" ref="segment53" />
 </bean>
 <bean id = "segment54nl" class = "emlab.gen.domain.market.electricity.SegmentLoad"
 	p:baseLoad="${segment54nl}">
@@ -539,7 +539,7 @@
 </bean>
 <bean id = "segment60nl" class = "emlab.gen.domain.market.electricity.SegmentLoad"
 	p:baseLoad="${segment60nl}">
-	<property name="segment" ref="segment40" />
+	<property name="segment" ref="segment60" />
 </bean>
 
 <!-- Commodity Markets -->
@@ -1277,7 +1277,7 @@
 
 <bean id="projectPropertyConfigurer"
 	class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-	<property name="location" value="classpath:scenarios/parameters1-Baseline.properties" />
+	<property name="location" value="classpath:scenarios/parameters2-StorageMedium60Segments.properties" />
 </bean>
 
 </beans>

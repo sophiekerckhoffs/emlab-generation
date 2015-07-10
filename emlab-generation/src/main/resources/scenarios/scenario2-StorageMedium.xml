@@ -1137,7 +1137,7 @@
 
 <bean id="projectPropertyConfigurer"
 	class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-	<property name="location" value="classpath:scenarios/parameters1-Baseline.properties" />
+	<property name="location" value="classpath:scenarios/parameters2-StorageMedium.properties" />
 </bean>
 
 </beans>

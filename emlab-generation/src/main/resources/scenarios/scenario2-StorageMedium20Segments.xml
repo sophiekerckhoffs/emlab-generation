@@ -132,7 +132,7 @@
 <bean id="segment13" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="219"
 		p:segmentID="8" />
 <bean id="segment14" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="219"
-		p:segmentID="27" />
+		p:segmentID="7" />
 <bean id="segment15" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="219"
 		p:segmentID="6" />
 <bean id="segment16" class="emlab.gen.domain.market.electricity.Segment" p:lengthInHours="219"
@@ -999,7 +999,7 @@
 
 <bean id="projectPropertyConfigurer"
 	class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-	<property name="location" value="classpath:scenarios/parameters1-Baseline.properties" />
+	<property name="location" value="classpath:scenarios/parameters2-StorageMedium20Segments.properties" />
 </bean>
 
 </beans>
