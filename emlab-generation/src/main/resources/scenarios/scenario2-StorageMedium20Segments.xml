@@ -980,6 +980,7 @@
 	p:expectedLeadtime="1" p:expectedPermittime="1" p:minimumFuelQuality="1"
 	p:maximumInstalledCapacityFractionInCountry="1"
 	p:maximumInstalledCapacityFractionPerAgent="1"
+	p:peakSegmentDependentAvailability="1"
 	p:applicableForLongTermContract="false"
 	p:intermittent="true"
 	p:storage="true"
