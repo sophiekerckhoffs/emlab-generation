@@ -156,13 +156,14 @@ public class DecarbonizationModelRole extends AbstractRole<DecarbonizationModel>
         if (model.isRealRenewableDataImplemented())
             determineResidualLoadCurve.act(model);
 
-        logger.warn("  0. Dismantling & paying loans");
-        for (EnergyProducer producer : reps.genericRepository.findAllAtRandom(EnergyProducer.class)) {
-            dismantlePowerPlantRole.act(producer);
-            payForLoansRole.act(producer);
-            // producer.act(dismantlePowerPlantRole);
-            // producer.act(payForLoansRole);
-        }
+        // logger.warn("  0. Dismantling & paying loans");
+        // for (EnergyProducer producer :
+        // reps.genericRepository.findAllAtRandom(EnergyProducer.class)) {
+        // dismantlePowerPlantRole.act(producer);
+        // payForLoansRole.act(producer);
+        // producer.act(dismantlePowerPlantRole);
+        // producer.act(payForLoansRole);
+        // }
 
         /*
          * Determine fuel mix of power plants

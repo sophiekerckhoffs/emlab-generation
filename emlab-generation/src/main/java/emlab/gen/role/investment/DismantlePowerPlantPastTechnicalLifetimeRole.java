@@ -35,7 +35,8 @@ import emlab.gen.repository.Reps;
  */
 
 @RoleComponent
-public class DismantlePowerPlantPastTechnicalLifetimeRole extends AbstractRole<EnergyProducer> implements Role<EnergyProducer> {
+public class DismantlePowerPlantPastTechnicalLifetimeRole extends AbstractRole<EnergyProducer> implements
+        Role<EnergyProducer> {
 
     @Autowired
     Reps reps;
@@ -46,10 +47,15 @@ public class DismantlePowerPlantPastTechnicalLifetimeRole extends AbstractRole<E
 
         // dismantle plants when passed technical lifetime
         for (PowerPlant plant : reps.powerPlantRepository.findOperationalPowerPlantsByOwner(producer, getCurrentTick())) {
-
+            logger.warn("Construction start time: " + plant.getConstructionStartTime());
+            logger.warn("Acutal permite time: " + plant.calculateActualPermittime());
+            logger.warn("Acutal lead time: " + plant.calculateActualLeadtime());
+            logger.warn("Get actual life time: " + plant.getActualLifetime());
+            logger.warn("Calculate actual life time: " + plant.calculateActualLifetime());
+            logger.warn("Expectedlifetime: " + plant.getTechnology().getExpectedLifetime());
             int prolongYearsOfDismantlng = producer.getDismantlingProlongingYearsAfterTechnicalLifetime();
             if (!plant.isWithinTechnicalLifetime(getCurrentTick() + prolongYearsOfDismantlng)) {
-                logger.info("       Dismantling power plant because the technical life time has passed: " + plant);
+                logger.warn("       Dismantling power plant because the technical life time has passed: " + plant);
                 plant.dismantlePowerPlant(getCurrentTick());
             }
         }

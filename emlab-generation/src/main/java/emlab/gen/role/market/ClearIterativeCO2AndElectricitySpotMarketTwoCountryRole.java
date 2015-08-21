@@ -385,6 +385,8 @@ public class ClearIterativeCO2AndElectricitySpotMarketTwoCountryRole extends
             // updatePowerDispatchPlansAfterTwoCountryClearingIsComplete(segment);
 
             for (ElectricitySpotMarket market : reps.marketRepository.findAllElectricitySpotMarkets()) {
+                logger.warn("Supplies :" + marketOutcomes.supplies.get(market));
+                logger.warn("Load :" + marketOutcomes.loads.get(market));
                 if (marketOutcomes.supplies.get(market) + epsilon < marketOutcomes.loads.get(market)) {
                     marketOutcomes.prices.put(market, market.getValueOfLostLoad());
                 }
